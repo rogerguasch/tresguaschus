@@ -1,19 +1,19 @@
-name: Tests
+name: Formats
 
 on: ['push', 'pull_request']
 
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+
     strategy:
       fail-fast: true
       matrix:
         os: [ubuntu-latest]
-        php: [8.4']
-        laravel: [12.9.2]
+        php: [8.4]
         dependency-version: [prefer-lowest, prefer-stable]
 
-    name: Tests P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
+    name: Formats P${{ matrix.php }} - ${{ matrix.os }} - ${{ matrix.dependency-version }}
 
     steps:
 
@@ -24,8 +24,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, mbstring, zip, fileinfo
-          coverage: none
+          extensions: dom, mbstring, zip
+          coverage: pcov
 
       - name: Get Composer cache directory
         id: composer-cache
@@ -42,12 +42,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer update --${{ matrix.dependency-version }} --no-interaction --prefer-dist
 
-      - name: Require Testbench v10 for Laravel 12
-        if: startsWith(matrix.laravel, '12')
-        run: composer require --dev orchestra/testbench:^10.0 --no-interaction --with-all-dependencies
+      - name: Coding Style Checks
+        run: composer test:lint
 
-      - name: Install Laravel
-        run: composer require laravel/framework:${{ matrix.laravel }} --with-all-dependencies --no-interaction --prefer-dist
-
-      - name: Integration Tests
-        run: php ./vendor/bin/pest
+      - name: Type Checks
+        run: composer test:types
