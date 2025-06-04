@@ -71,6 +71,7 @@
         "test:type-coverage": "pest --type-coverage --parallel --exactly=100",
         "test:typos": "peck",
         "test:unit": "pest --colors=always --coverage --parallel --min=80",
+        "test:refactor": "rector --dry-run",
         "test": [
             "@php artisan config:clear --ansi",
             "@test:refactor",
