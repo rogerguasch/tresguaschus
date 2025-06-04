@@ -13,7 +13,7 @@ npm install
 ## Usage
 
 ```bash
-npm start
+composer run dev
 ```
 
 ## Test Scripts (composer run test)
