@@ -23,7 +23,8 @@
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.8",
         "pestphp/pest": "^3.8.2",
-        "pestphp/pest-plugin-laravel": "^3.2"
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "pestphp/pest-plugin-type-coverage": "^3.5"
     },
     "autoload": {
         "psr-4": {
@@ -64,9 +65,11 @@
         ],
         "lint": "pint",
         "test:lint": "pint --test",
+        "test:type-coverage": "pest --type-coverage --parallel --exactly=100",
         "test": [
             "@php artisan config:clear --ansi",
             "@test:lint",
+            "@test:type-coverage",
             "@php artisan test"
         ]
     },
