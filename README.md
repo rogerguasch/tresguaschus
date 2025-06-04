@@ -1,4 +1,4 @@
-# Tres Guaschus
+# Tresguaschus
 
 Project to manage and visualize information about the Tres Guaschus.
 
