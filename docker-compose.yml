@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: tresguaschus.app
+    volumes:
+      - ./:/var/www
+    ports:
+      - "9000:9000"
+    depends_on:
+      - database
+    command: composer run dev
+
+  database:
+    image: postgres:17
+    container_name: tresguaschus.db
+    restart: always
+    environment:
+      POSTGRES_DB: tresguaschus
+      POSTGRES_USER: tresguaschus
+      POSTGRES_PASSWORD: tres_guaschus
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
