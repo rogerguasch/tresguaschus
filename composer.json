@@ -24,7 +24,8 @@
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.8.1",
         "pestphp/pest": "^3.8.2",
-        "pestphp/pest-plugin-laravel": "^3.2"
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "rector/rector": "^2.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -80,12 +81,19 @@
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"php artisan inertia:start-ssr\" --names=server,queue,logs,ssr --kill-others"
         ],
+        "lint": "pint",
+        "refactor": "rector",
         "test": [
-            "composer normalize"
+            "@php artisan config:clear --ansi",
+            "@composer normalize",
+            "@test:refactor",
+            "@test:lint"
         ],
         "test1": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
-        ]
+        ],
+        "test:lint": "pint --test",
+        "test:refactor": "rector --dry-run"
     }
 }
