@@ -25,6 +25,7 @@
         "nunomaduro/collision": "^8.8.1",
         "pestphp/pest": "^3.8.2",
         "pestphp/pest-plugin-laravel": "^3.2",
+        "pestphp/pest-plugin-type-coverage": "^3.5",
         "rector/rector": "^2.0"
     },
     "minimum-stability": "stable",
