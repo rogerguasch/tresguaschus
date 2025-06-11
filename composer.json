@@ -92,7 +92,8 @@
             "@test:refactor",
             "@test:lint",
             "@test:type-coverage",
-            "@test:typos"
+            "@test:typos",
+            "@test:unit"
         ],
         "test1": [
             "@php artisan config:clear --ansi",
@@ -101,6 +102,7 @@
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
         "test:type-coverage": "pest --type-coverage --parallel --exactly=100",
-        "test:typos": "peck"
+        "test:typos": "peck",
+        "test:unit": "pest --colors=always --coverage --parallel --min=80"
     }
 }
