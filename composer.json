@@ -88,13 +88,15 @@
             "@php artisan config:clear --ansi",
             "@composer normalize",
             "@test:refactor",
-            "@test:lint"
+            "@test:lint",
+            "@test:type-coverage"
         ],
         "test1": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
         "test:lint": "pint --test",
-        "test:refactor": "rector --dry-run"
+        "test:refactor": "rector --dry-run",
+        "test:type-coverage": "pest --type-coverage --parallel --exactly=100"
     }
 }
