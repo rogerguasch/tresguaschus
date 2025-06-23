@@ -23,6 +23,7 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "peckphp/peck": "^0.1.3",
         "pestphp/pest": "^3.8",
         "pestphp/pest-plugin-laravel": "^3.2",
         "rector/rector": "^2.0"
@@ -67,9 +68,11 @@
         "lint": "pint",
         "test:lint": "pint --test",
         "test:refactor": "rector --dry-run",
+        "test:typos": "peck",
         "test": [
             "@test:refactor",
-            "@test:lint"
+            "@test:lint",
+            "@test:typos"
         ]
     },
     "extra": {
