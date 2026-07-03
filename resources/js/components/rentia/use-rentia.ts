@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useReducer } from 'react';
+import {
+    destroy as destroyCategory,
+    store as storeCategory,
+    update as updateCategory,
+} from '@/actions/App/Category/Infrastructure/Http/Controllers/CategoryController';
+import { router } from '@inertiajs/react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import {
     CHAT_REPLIES,
     INITIAL_FILES,
@@ -75,8 +81,8 @@ type Action =
     | { type: 'SET_CAT_NAME'; value: string }
     | { type: 'SET_CAT_TYPE'; catType: TransactionType }
     | { type: 'SET_CAT_COLOR'; color: string }
-    | { type: 'SAVE_CAT' }
-    | { type: 'DELETE_CAT'; id: string }
+    | { type: 'SET_CATEGORIES'; categories: Category[] }
+    | { type: 'SHOW_TOAST'; message: string; ok: boolean }
     | { type: 'SET_FORM_FIELD'; field: keyof RentalForm; value: string }
     | { type: 'SUBMIT_RENTAL' }
     | { type: 'UPLOAD_FILES'; files: Array<{ name: string; size: number }> }
@@ -359,53 +365,11 @@ function reducer(state: RentiaState, action: Action): RentiaState {
                 catDraft: { ...state.catDraft, color: action.color },
             };
 
-        case 'SAVE_CAT': {
-            const draft = state.catDraft;
-            if (!draft.name.trim()) {
-                return withToast(
-                    state,
-                    'Escribe un nombre de categoría',
-                    false,
-                );
-            }
-            const categories = draft.id
-                ? state.categories.map((c) =>
-                      c.id === draft.id
-                          ? {
-                                ...c,
-                                name: draft.name.trim(),
-                                type: draft.type,
-                                color: draft.color,
-                            }
-                          : c,
-                  )
-                : [
-                      ...state.categories,
-                      {
-                          id: `c${Date.now()}`,
-                          name: draft.name.trim(),
-                          type: draft.type,
-                          color: draft.color,
-                      },
-                  ];
-            return withToast(
-                { ...state, categories, catModalOpen: false },
-                draft.id ? 'Categoría actualizada' : 'Categoría creada',
-                true,
-            );
-        }
+        case 'SET_CATEGORIES':
+            return { ...state, categories: action.categories };
 
-        case 'DELETE_CAT':
-            return withToast(
-                {
-                    ...state,
-                    categories: state.categories.filter(
-                        (c) => c.id !== action.id,
-                    ),
-                },
-                'Categoría eliminada',
-                true,
-            );
+        case 'SHOW_TOAST':
+            return withToast(state, action.message, action.ok);
 
         case 'SET_FORM_FIELD':
             return {
@@ -558,6 +522,9 @@ export function useRentia(categories: Category[]): RentiaStore {
         createInitialState,
     );
 
+    const stateRef = useRef(state);
+    stateRef.current = state;
+
     useEffect(() => {
         if (!state.toast) {
             return;
@@ -568,6 +535,10 @@ export function useRentia(categories: Category[]): RentiaStore {
         );
         return () => window.clearTimeout(timer);
     }, [state.toast]);
+
+    useEffect(() => {
+        dispatch({ type: 'SET_CATEGORIES', categories });
+    }, [categories]);
 
     const actions = useMemo<RentiaActions>(
         () => ({
@@ -603,8 +574,68 @@ export function useRentia(categories: Category[]): RentiaStore {
             setCatType: (catType) =>
                 dispatch({ type: 'SET_CAT_TYPE', catType }),
             setCatColor: (color) => dispatch({ type: 'SET_CAT_COLOR', color }),
-            saveCat: () => dispatch({ type: 'SAVE_CAT' }),
-            deleteCat: (id) => dispatch({ type: 'DELETE_CAT', id }),
+            saveCat: () => {
+                const draft = stateRef.current.catDraft;
+                const name = draft.name.trim();
+                if (!name) {
+                    dispatch({
+                        type: 'SHOW_TOAST',
+                        message: 'Escribe un nombre de categoría',
+                        ok: false,
+                    });
+                    return;
+                }
+
+                const payload = { name, type: draft.type, color: draft.color };
+                const options = {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        dispatch({ type: 'CLOSE_CAT_MODAL' });
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: draft.id
+                                ? 'Categoría actualizada'
+                                : 'Categoría creada',
+                            ok: true,
+                        });
+                    },
+                    onError: () =>
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: 'Revisa los datos de la categoría',
+                            ok: false,
+                        }),
+                };
+
+                if (draft.id) {
+                    router.patch(
+                        updateCategory.url(Number(draft.id)),
+                        payload,
+                        options,
+                    );
+                } else {
+                    router.post(storeCategory.url(), payload, options);
+                }
+            },
+            deleteCat: (id) => {
+                router.delete(destroyCategory.url(Number(id)), {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () =>
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: 'Categoría eliminada',
+                            ok: true,
+                        }),
+                    onError: () =>
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: 'No se pudo eliminar la categoría',
+                            ok: false,
+                        }),
+                });
+            },
             setFormField: (field, value) =>
                 dispatch({ type: 'SET_FORM_FIELD', field, value }),
             submitRental: () => dispatch({ type: 'SUBMIT_RENTAL' }),
