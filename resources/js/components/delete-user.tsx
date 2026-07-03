@@ -1,4 +1,4 @@
-import UserController from '@/actions/App/Http/Controllers/UserController';
+import UserController from '@/actions/App/User/Infrastructure/Http/Controllers/UserController';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';

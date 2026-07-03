@@ -9,7 +9,7 @@ arch()->preset()->security()->ignoring([
 ]);
 
 arch('controllers')
-    ->expect('App\Http\Controllers')
+    ->expect('App\User\Infrastructure\Http\Controllers')
     ->not->toBeUsed();
 
 //

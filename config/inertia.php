@@ -18,9 +18,37 @@ return [
     */
 
     'ssr' => [
-        'enabled' => true,
+        'enabled' => env('INERTIA_SSR_ENABLED', true),
         'url' => 'http://127.0.0.1:13714',
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pages
+    |--------------------------------------------------------------------------
+    |
+    | Used by the Inertia view finder (including `assertInertia`) to locate
+    | page components on the filesystem: their base paths and the file
+    | extensions to consider.
+    |
+    */
+
+    'pages' => [
+
+        'paths' => [
+            resource_path('js/pages'),
+        ],
+
+        'extensions' => [
+            'js',
+            'jsx',
+            'svelte',
+            'ts',
+            'tsx',
+            'vue',
+        ],
 
     ],
 

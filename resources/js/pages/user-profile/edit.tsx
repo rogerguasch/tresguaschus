@@ -1,4 +1,4 @@
-import UserProfileController from '@/actions/App/Http/Controllers/UserProfileController';
+import UserProfileController from '@/actions/App/User/Infrastructure/Http/Controllers/UserProfileController';
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';

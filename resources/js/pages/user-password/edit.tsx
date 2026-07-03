@@ -1,4 +1,4 @@
-import UserPasswordController from '@/actions/App/Http/Controllers/UserPasswordController';
+import UserPasswordController from '@/actions/App/User/Infrastructure/Http/Controllers/UserPasswordController';
 import InputError from '@/components/input-error';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';

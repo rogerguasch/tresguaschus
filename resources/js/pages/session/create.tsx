@@ -1,4 +1,4 @@
-import SessionController from '@/actions/App/Http/Controllers/SessionController';
+import SessionController from '@/actions/App/User/Infrastructure/Http/Controllers/SessionController';
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';

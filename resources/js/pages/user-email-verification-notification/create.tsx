@@ -1,5 +1,5 @@
 // Components
-import UserEmailVerificationNotificationController from '@/actions/App/Http/Controllers/UserEmailVerificationNotificationController';
+import UserEmailVerificationNotificationController from '@/actions/App/User/Infrastructure/Http/Controllers/UserEmailVerificationNotificationController';
 import { logout } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';

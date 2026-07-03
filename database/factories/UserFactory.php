@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\User\Domain\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 final class UserFactory extends Factory
 {
+    /**
+     * @var class-string<User>
+     */
+    protected $model = User::class;
+
     private static ?string $password = null;
 
     /**

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\HandleInertiaRequests;
-use App\Models\User;
+use App\User\Domain\Models\User;
 use Illuminate\Http\Request;
 
 it('shares app name from config', function (): void {
