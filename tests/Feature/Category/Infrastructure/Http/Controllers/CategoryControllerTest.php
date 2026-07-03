@@ -6,16 +6,17 @@ use App\Category\Domain\Enums\TransactionType;
 use App\Category\Domain\Models\Category;
 use App\User\Domain\Models\User;
 
-it('requires authentication to store', function (): void {
-    $response = $this->post(route('categories.store'), [
-        'name' => 'Renta',
-        'type' => 'ingreso',
-        'color' => '#16a34a',
-    ]);
+it('allows guests to store a category', function (): void {
+    $response = $this->fromRoute('rentia')
+        ->post(route('categories.store'), [
+            'name' => 'Renta',
+            'type' => 'ingreso',
+            'color' => '#16a34a',
+        ]);
 
-    $response->assertRedirectToRoute('login');
+    $response->assertRedirect(route('rentia'));
 
-    expect(Category::query()->count())->toBe(0);
+    expect(Category::query()->where('name', 'Renta')->exists())->toBeTrue();
 });
 
 it('may store a category', function (): void {
