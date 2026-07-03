@@ -1,7 +1,12 @@
 import { RentiaApp } from '@/components/rentia/rentia-app';
+import type { Category } from '@/components/rentia/types';
 import { Head } from '@inertiajs/react';
 
-export default function Rentia() {
+interface RentiaPageProps {
+    categories: Category[];
+}
+
+export default function Rentia({ categories }: RentiaPageProps) {
     return (
         <>
             <Head title="Rentia">
@@ -16,7 +21,7 @@ export default function Rentia() {
                     rel="stylesheet"
                 />
             </Head>
-            <RentiaApp />
+            <RentiaApp categories={categories} />
         </>
     );
 }

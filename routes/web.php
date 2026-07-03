@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Category\Domain\Models\Category;
 use App\Category\Infrastructure\Http\Controllers\CategoryController;
+use App\Category\Infrastructure\Http\Resources\CategoryResource;
 use App\User\Infrastructure\Http\Controllers\SessionController;
 use App\User\Infrastructure\Http\Controllers\UserController;
 use App\User\Infrastructure\Http\Controllers\UserEmailResetNotification;
@@ -16,7 +18,9 @@ use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
-Route::get('rentia', fn () => Inertia::render('rentia'))->name('rentia');
+Route::get('rentia', fn () => Inertia::render('rentia', [
+    'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
+]))->name('rentia');
 
 Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useReducer } from 'react';
 import {
     CHAT_REPLIES,
-    INITIAL_CATEGORIES,
     INITIAL_FILES,
     INITIAL_RENTALS,
     INITIAL_TRANSACTIONS,
@@ -100,14 +99,14 @@ function emptyForm(): RentalForm {
     };
 }
 
-function createInitialState(): RentiaState {
+function createInitialState(categories: Category[]): RentiaState {
     return {
         view: 'dashboard',
         selectedId: null,
         rentals: INITIAL_RENTALS,
         transactions: INITIAL_TRANSACTIONS,
         files: INITIAL_FILES,
-        categories: INITIAL_CATEGORIES,
+        categories,
         rentalSearch: '',
         dashFilters: { rentalId: 'all', from: '2026-01-01', to: '2026-06-30' },
         detailFilters: { from: '', to: '', category: 'all' },
@@ -552,10 +551,10 @@ export interface RentiaStore {
     actions: RentiaActions;
 }
 
-export function useRentia(): RentiaStore {
+export function useRentia(categories: Category[]): RentiaStore {
     const [state, dispatch] = useReducer(
         reducer,
-        undefined,
+        categories,
         createInitialState,
     );
 
