@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Category\Infrastructure\Http\Controllers\CategoryController;
 use App\User\Infrastructure\Http\Controllers\SessionController;
 use App\User\Infrastructure\Http\Controllers\UserController;
 use App\User\Infrastructure\Http\Controllers\UserEmailResetNotification;
@@ -42,6 +43,11 @@ Route::middleware('auth')->group(function (): void {
     // User Two-Factor Authentication...
     Route::get('settings/two-factor', [UserTwoFactorAuthenticationController::class, 'show'])
         ->name('two-factor.show');
+
+    // Categories...
+    Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 });
 
 Route::middleware('guest')->group(function (): void {
