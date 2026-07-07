@@ -1,9 +1,7 @@
-import {
-    destroy as destroyCategory,
-    store as storeCategory,
-    update as updateCategory,
-} from '@/actions/App/Category/Infrastructure/Http/Controllers/CategoryController';
-import { store as storeTransaction } from '@/actions/App/Transaction/Infrastructure/Http/Controllers/TransactionController';
+import CreateCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/CreateCategoryController';
+import DeleteCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/DeleteCategoryController';
+import UpdateCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/UpdateCategoryController';
+import CreateTransactionController from '@/actions/App/Transaction/Infrastructure/Http/Controllers/CreateTransactionController';
 import { router } from '@inertiajs/react';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
 import { CHAT_REPLIES, INITIAL_FILES, INITIAL_RENTALS } from './data';
@@ -568,7 +566,7 @@ export function useRental(
                     method: draft.method || 'Transferencia',
                 };
 
-                router.post(storeTransaction.url(), payload, {
+                router.post(CreateTransactionController.url(), payload, {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: () => {
@@ -632,16 +630,20 @@ export function useRental(
 
                 if (draft.id) {
                     router.patch(
-                        updateCategory.url(Number(draft.id)),
+                        UpdateCategoryController.url(Number(draft.id)),
                         payload,
                         options,
                     );
                 } else {
-                    router.post(storeCategory.url(), payload, options);
+                    router.post(
+                        CreateCategoryController.url(),
+                        payload,
+                        options,
+                    );
                 }
             },
             deleteCat: (id) => {
-                router.delete(destroyCategory.url(Number(id)), {
+                router.delete(DeleteCategoryController.url(Number(id)), {
                     preserveScroll: true,
                     preserveState: true,
                     onSuccess: () =>

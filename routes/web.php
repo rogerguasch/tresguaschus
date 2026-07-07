@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
-use App\Category\Infrastructure\Http\Controllers\CategoryController;
+use App\Category\Infrastructure\Http\Controllers\CreateCategoryController;
+use App\Category\Infrastructure\Http\Controllers\DeleteCategoryController;
+use App\Category\Infrastructure\Http\Controllers\UpdateCategoryController;
 use App\Category\Infrastructure\Http\Resources\CategoryResource;
 use App\Transaction\Domain\Models\Transaction;
-use App\Transaction\Infrastructure\Http\Controllers\TransactionController;
+use App\Transaction\Infrastructure\Http\Controllers\CreateTransactionController;
 use App\Transaction\Infrastructure\Http\Resources\TransactionResource;
 use App\User\Infrastructure\Http\Controllers\SessionController;
 use App\User\Infrastructure\Http\Controllers\UserController;
@@ -30,12 +32,12 @@ Route::get('dashboard', fn () => Inertia::render('dashboard', [
 ]))->name('dashboard');
 
 // Categories... (TODO: move behind auth once the dashboard requires authentication)
-Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
-Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+Route::post('categories', CreateCategoryController::class)->name('categories.store');
+Route::patch('categories/{category}', UpdateCategoryController::class)->name('categories.update');
+Route::delete('categories/{category}', DeleteCategoryController::class)->name('categories.destroy');
 
 // Transactions... (TODO: move behind auth once the dashboard requires authentication)
-Route::post('transactions', [TransactionController::class, 'store'])->name('transactions.store');
+Route::post('transactions', CreateTransactionController::class)->name('transactions.store');
 
 Route::middleware('auth')->group(function (): void {
     // User...
