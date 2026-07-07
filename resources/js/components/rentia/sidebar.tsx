@@ -48,7 +48,7 @@ export function Sidebar() {
                     />
                 </div>
                 <span className="text-base font-bold tracking-tight">
-                    Rentia
+                    Tresguaschus
                 </span>
             </div>
 

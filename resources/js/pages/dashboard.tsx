@@ -9,7 +9,7 @@ interface DashboardPageProps {
 export default function Dashboard({ categories }: DashboardPageProps) {
     return (
         <>
-            <Head title="Rentia">
+            <Head title="Tresguaschus">
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link
                     rel="preconnect"
