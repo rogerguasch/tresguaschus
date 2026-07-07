@@ -18,18 +18,15 @@ use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
-Route::get('rentia', fn () => Inertia::render('rentia', [
+// Rentia dashboard (entry point).
+Route::get('dashboard', fn () => Inertia::render('dashboard', [
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
-]))->name('rentia');
+]))->name('dashboard');
 
-// Categories... (TODO: move behind auth once Rentia requires authentication)
+// Categories... (TODO: move behind auth once the dashboard requires authentication)
 Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
 Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
-
-Route::middleware(['auth', 'verified'])->group(function (): void {
-    Route::get('dashboard', fn () => Inertia::render('dashboard'))->name('dashboard');
-});
 
 Route::middleware('auth')->group(function (): void {
     // User...

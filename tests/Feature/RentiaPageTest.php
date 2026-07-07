@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Category\Domain\Models\Category;
 
 it('renders the Rentia single-page app', function (): void {
-    $this->get(route('rentia'))
+    $this->get(route('dashboard'))
         ->assertOk()
-        ->assertInertia(fn ($page) => $page->component('rentia'));
+        ->assertInertia(fn ($page) => $page->component('dashboard'));
 });
 
 it('passes categories from the backend to the Rentia page', function (): void {
@@ -16,10 +16,10 @@ it('passes categories from the backend to the Rentia page', function (): void {
         'color' => '#16a34a',
     ]);
 
-    $this->get(route('rentia'))
+    $this->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page
-            ->component('rentia')
+            ->component('dashboard')
             ->has('categories', 1)
             ->where('categories.0.id', (string) $category->id)
             ->where('categories.0.name', 'Renta')
