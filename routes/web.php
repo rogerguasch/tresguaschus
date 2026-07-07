@@ -21,7 +21,7 @@ use Inertia\Inertia;
 
 Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
-// Rentia dashboard (entry point).
+// Rental dashboard (entry point).
 Route::get('dashboard', fn () => Inertia::render('dashboard', [
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
     'transactions' => TransactionResource::collection(

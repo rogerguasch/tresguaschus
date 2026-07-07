@@ -1,5 +1,5 @@
-import { RentiaApp } from '@/components/rentia/rentia-app';
-import type { Category, Transaction } from '@/components/rentia/types';
+import { RentalApp } from '@/components/rental/rental-app';
+import type { Category, Transaction } from '@/components/rental/types';
 import { Head } from '@inertiajs/react';
 
 interface DashboardPageProps {
@@ -25,7 +25,7 @@ export default function Dashboard({
                     rel="stylesheet"
                 />
             </Head>
-            <RentiaApp categories={categories} transactions={transactions} />
+            <RentalApp categories={categories} transactions={transactions} />
         </>
     );
 }

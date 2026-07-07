@@ -1,8 +1,8 @@
 import { Icon } from './icon';
-import { useRentiaContext } from './rentia-context';
+import { useRentalContext } from './rental-context';
 
 export function Toast() {
-    const { state } = useRentiaContext();
+    const { state } = useRentalContext();
     const toast = state.toast;
 
     if (!toast) {

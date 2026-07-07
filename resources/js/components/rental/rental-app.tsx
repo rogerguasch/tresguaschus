@@ -2,11 +2,11 @@ import { Header } from './header';
 import { CategoryModal } from './modals/category-modal';
 import { NewTransactionModal } from './modals/new-transaction-modal';
 import { TransactionDetailModal } from './modals/transaction-detail-modal';
-import { RentiaProvider } from './rentia-context';
+import { RentalProvider } from './rental-context';
 import { Sidebar } from './sidebar';
 import { Toast } from './toast';
-import type { Category, RentiaView, Transaction } from './types';
-import { useRentia } from './use-rentia';
+import type { Category, RentalView, Transaction } from './types';
+import { useRental } from './use-rental';
 import { ChatView } from './views/chat-view';
 import { DashboardView } from './views/dashboard-view';
 import { NewRentalView } from './views/new-rental-view';
@@ -15,7 +15,7 @@ import { RentalsView } from './views/rentals-view';
 import { SettingsView } from './views/settings-view';
 import { TransactionsView } from './views/transactions-view';
 
-const VIEWS: Record<RentiaView, React.ComponentType> = {
+const VIEWS: Record<RentalView, React.ComponentType> = {
     dashboard: DashboardView,
     rentals: RentalsView,
     detail: RentalDetailView,
@@ -25,22 +25,22 @@ const VIEWS: Record<RentiaView, React.ComponentType> = {
     settings: SettingsView,
 };
 
-function CurrentView({ view }: { view: RentiaView }) {
+function CurrentView({ view }: { view: RentalView }) {
     const View = VIEWS[view];
     return <View />;
 }
 
-export function RentiaApp({
+export function RentalApp({
     categories,
     transactions,
 }: {
     categories: Category[];
     transactions: Transaction[];
 }) {
-    const store = useRentia(categories, transactions);
+    const store = useRental(categories, transactions);
 
     return (
-        <RentiaProvider value={store}>
+        <RentalProvider value={store}>
             <div
                 className="flex h-screen w-full overflow-hidden bg-white text-sm text-zinc-950 antialiased"
                 style={{
@@ -60,6 +60,6 @@ export function RentiaApp({
                 <NewTransactionModal />
                 <Toast />
             </div>
-        </RentiaProvider>
+        </RentalProvider>
     );
 }

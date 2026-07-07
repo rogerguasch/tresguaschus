@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { CATEGORY_COLOR_CHOICES } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import type { TransactionType } from '../types';
 import { Field, PrimaryButton, SecondaryButton, TextInput } from '../ui';
 import { Modal } from './modal';
@@ -10,7 +10,7 @@ const segmentBase =
     'inline-flex h-[42px] cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition';
 
 export function CategoryModal() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     if (!state.catModalOpen) {
         return null;
     }

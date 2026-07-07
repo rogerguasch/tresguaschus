@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 import { PROPERTY_TYPE_ICONS } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import { Card, TextInput } from '../ui';
 import { formatEuros, getInitials, shortAddress } from '../utils';
 
 export function RentalsView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { rentals, transactions, rentalSearch } = state;
 
     const cards = useMemo(() => {

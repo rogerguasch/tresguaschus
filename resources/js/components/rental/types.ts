@@ -11,7 +11,7 @@ export type PropertyType =
     | 'Plaza garaje'
     | 'Trastero';
 
-export type RentiaView =
+export type RentalView =
     | 'dashboard'
     | 'rentals'
     | 'detail'

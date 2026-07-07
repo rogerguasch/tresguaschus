@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { Sparkline } from '../charts/sparkline';
 import { MONTHS_LONG } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import { rentalsById, toTransactionRow } from '../selectors';
 import { Card, SecondaryButton, SelectInput } from '../ui';
 import { formatEuros, shortAddress, sumByType } from '../utils';
 
 export function TransactionsView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { rentals, transactions, categories, filters } = state;
 
     const rentalsMap = useMemo(() => rentalsById(rentals), [rentals]);

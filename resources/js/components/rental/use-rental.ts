@@ -16,7 +16,7 @@ import type {
     Rental,
     RentalFile,
     RentalForm,
-    RentiaView,
+    RentalView,
     Toast,
     Transaction,
     TransactionDraft,
@@ -25,8 +25,8 @@ import type {
 } from './types';
 import { todayIso } from './utils';
 
-interface RentiaState {
-    view: RentiaView;
+interface RentalState {
+    view: RentalView;
     selectedId: string | null;
     rentals: Rental[];
     transactions: Transaction[];
@@ -53,7 +53,7 @@ interface RentiaState {
 }
 
 type Action =
-    | { type: 'NAVIGATE'; view: RentiaView }
+    | { type: 'NAVIGATE'; view: RentalView }
     | { type: 'TOGGLE_RENTALS_NAV' }
     | { type: 'TOGGLE_SETTINGS_NAV' }
     | { type: 'OPEN_RENTAL'; id: string }
@@ -101,7 +101,7 @@ function emptyForm(): RentalForm {
     };
 }
 
-interface RentiaInit {
+interface RentalInit {
     categories: Category[];
     transactions: Transaction[];
 }
@@ -109,7 +109,7 @@ interface RentiaInit {
 function createInitialState({
     categories,
     transactions,
-}: RentiaInit): RentiaState {
+}: RentalInit): RentalState {
     return {
         view: 'dashboard',
         selectedId: null,
@@ -151,12 +151,12 @@ function createInitialState({
     };
 }
 
-function withToast(state: RentiaState, msg: string, ok: boolean): RentiaState {
+function withToast(state: RentalState, msg: string, ok: boolean): RentalState {
     const toastSeq = state.toastSeq + 1;
     return { ...state, toast: { id: toastSeq, msg, ok }, toastSeq };
 }
 
-function reducer(state: RentiaState, action: Action): RentiaState {
+function reducer(state: RentalState, action: Action): RentalState {
     switch (action.type) {
         case 'NAVIGATE':
             return {
@@ -451,8 +451,8 @@ function reducer(state: RentiaState, action: Action): RentiaState {
     }
 }
 
-export interface RentiaActions {
-    navigate: (view: RentiaView) => void;
+export interface RentalActions {
+    navigate: (view: RentalView) => void;
     toggleRentalsNav: () => void;
     toggleSettingsNav: () => void;
     openRental: (id: string) => void;
@@ -485,15 +485,15 @@ export interface RentiaActions {
     sendChat: (text: string) => void;
 }
 
-export interface RentiaStore {
-    state: RentiaState;
-    actions: RentiaActions;
+export interface RentalStore {
+    state: RentalState;
+    actions: RentalActions;
 }
 
-export function useRentia(
+export function useRental(
     categories: Category[],
     transactions: Transaction[],
-): RentiaStore {
+): RentalStore {
     const [state, dispatch] = useReducer(
         reducer,
         { categories, transactions },
@@ -522,7 +522,7 @@ export function useRentia(
         dispatch({ type: 'SET_TRANSACTIONS', transactions });
     }, [transactions]);
 
-    const actions = useMemo<RentiaActions>(
+    const actions = useMemo<RentalActions>(
         () => ({
             navigate: (view) => dispatch({ type: 'NAVIGATE', view }),
             toggleRentalsNav: () => dispatch({ type: 'TOGGLE_RENTALS_NAV' }),
@@ -672,4 +672,4 @@ export function useRentia(
     return useMemo(() => ({ state, actions }), [state, actions]);
 }
 
-export type { RentiaState };
+export type { RentalState };

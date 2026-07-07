@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
 import { PAYMENT_METHODS } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import type { TransactionType } from '../types';
 import {
     Field,
@@ -18,7 +18,7 @@ const segmentBase =
     'inline-flex h-[42px] cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition';
 
 export function NewTransactionModal() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { txModalOpen, draft, rentals, categories } = state;
 
     const categoryOptions = useMemo(

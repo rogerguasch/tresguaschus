@@ -1,10 +1,10 @@
 import { type KeyboardEvent, useEffect, useRef } from 'react';
 import { CHAT_SUGGESTIONS } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 
 export function ChatView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { chatMessages, chatInput } = state;
     const scrollRef = useRef<HTMLDivElement>(null);
 

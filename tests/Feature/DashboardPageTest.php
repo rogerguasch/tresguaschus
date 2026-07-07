@@ -5,13 +5,13 @@ declare(strict_types=1);
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
 
-it('renders the Rentia single-page app', function (): void {
+it('renders the dashboard single-page app', function (): void {
     $this->get(route('dashboard'))
         ->assertOk()
         ->assertInertia(fn ($page) => $page->component('dashboard'));
 });
 
-it('passes categories from the backend to the Rentia page', function (): void {
+it('passes categories from the backend to the dashboard', function (): void {
     $category = Category::factory()->ingreso()->create([
         'name' => 'Renta',
         'color' => '#16a34a',
@@ -28,7 +28,7 @@ it('passes categories from the backend to the Rentia page', function (): void {
             ->where('categories.0.color', '#16a34a'));
 });
 
-it('passes transactions from the backend to the Rentia page', function (): void {
+it('passes transactions from the backend to the dashboard', function (): void {
     $category = Category::factory()->ingreso()->create(['name' => 'Renta']);
 
     $transaction = Transaction::factory()->for($category)->create([

@@ -1,6 +1,6 @@
 import { PROPERTY_TYPES } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import {
     Card,
     Field,
@@ -11,7 +11,7 @@ import {
 } from '../ui';
 
 export function NewRentalView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { form } = state;
 
     return (

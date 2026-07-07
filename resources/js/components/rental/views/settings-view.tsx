@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import type { Category, TransactionType } from '../types';
 import { Card } from '../ui';
 
@@ -19,7 +19,7 @@ function CategorySection({
     iconClass: string;
     categories: CategoryRow[];
 }) {
-    const { actions } = useRentiaContext();
+    const { actions } = useRentalContext();
 
     return (
         <Card className="overflow-hidden p-0">
@@ -64,7 +64,7 @@ function CategorySection({
 }
 
 export function SettingsView() {
-    const { state } = useRentiaContext();
+    const { state } = useRentalContext();
     const { categories, transactions } = state;
 
     const { ingresos, gastos } = useMemo(() => {

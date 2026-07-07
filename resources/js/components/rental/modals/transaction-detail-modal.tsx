@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import { categoryColor, formatDate, formatEuros, shortAddress } from '../utils';
 import { Modal } from './modal';
 
@@ -32,7 +32,7 @@ function DetailRow({
 }
 
 export function TransactionDetailModal() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { txDetailId, transactions, rentals, categories } = state;
 
     const detail = useMemo(() => {

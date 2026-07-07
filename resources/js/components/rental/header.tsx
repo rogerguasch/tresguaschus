@@ -1,5 +1,5 @@
 import { Icon } from './icon';
-import { useRentiaContext } from './rentia-context';
+import { useRentalContext } from './rental-context';
 import { PrimaryButton } from './ui';
 import { shortAddress } from './utils';
 
@@ -11,7 +11,7 @@ interface HeaderConfig {
 }
 
 export function Header() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { view, rentals, selectedId } = state;
 
     const config = ((): HeaderConfig => {

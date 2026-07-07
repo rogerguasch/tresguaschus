@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 import { Icon } from './icon';
-import { useRentiaContext } from './rentia-context';
+import { useRentalContext } from './rental-context';
 import { shortAddress } from './utils';
 
 interface NavButtonProps extends ComponentProps<'button'> {
@@ -26,7 +26,7 @@ function NavButton({ active, className, children, ...props }: NavButtonProps) {
 }
 
 export function Sidebar() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { view, selectedId, rentals } = state;
 
     const isDashboard = view === 'dashboard';

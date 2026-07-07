@@ -1,7 +1,7 @@
 import { type ChangeEvent, useMemo } from 'react';
 import { Sparkline } from '../charts/sparkline';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import { toTransactionRow } from '../selectors';
 import { Card, SecondaryButton, SelectInput } from '../ui';
 import { formatDate, formatEuros, getInitials, sumByType } from '../utils';
@@ -36,7 +36,7 @@ function InfoRow({
 }
 
 export function RentalDetailView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const {
         rentals,
         transactions,

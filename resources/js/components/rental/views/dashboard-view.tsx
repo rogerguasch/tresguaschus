@@ -5,7 +5,7 @@ import { NetChart } from '../charts/net-chart';
 import { Sparkline } from '../charts/sparkline';
 import { MONTHS_SHORT, RENTAL_PALETTE } from '../data';
 import { Icon } from '../icon';
-import { useRentiaContext } from '../rentia-context';
+import { useRentalContext } from '../rental-context';
 import { Card, SecondaryButton, SelectInput } from '../ui';
 import {
     categoryColor,
@@ -33,7 +33,7 @@ interface RepartRow {
 }
 
 export function DashboardView() {
-    const { state, actions } = useRentiaContext();
+    const { state, actions } = useRentalContext();
     const { rentals, transactions, categories, dashFilters } = state;
 
     const data = useMemo(() => {
