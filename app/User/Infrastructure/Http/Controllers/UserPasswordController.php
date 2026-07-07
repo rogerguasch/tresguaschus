@@ -6,9 +6,9 @@ namespace App\User\Infrastructure\Http\Controllers;
 
 use App\User\Application\Actions\CreateUserPassword;
 use App\User\Application\Actions\UpdateUserPassword;
+use App\User\Domain\Models\User;
 use App\User\Infrastructure\Http\Requests\CreateUserPasswordRequest;
 use App\User\Infrastructure\Http\Requests\UpdateUserPasswordRequest;
-use App\User\Domain\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

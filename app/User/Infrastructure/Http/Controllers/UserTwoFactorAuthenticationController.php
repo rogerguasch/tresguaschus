@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\User\Infrastructure\Http\Controllers;
 
-use App\User\Infrastructure\Http\Requests\ShowUserTwoFactorAuthenticationRequest;
 use App\User\Domain\Models\User;
+use App\User\Infrastructure\Http\Requests\ShowUserTwoFactorAuthenticationRequest;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;

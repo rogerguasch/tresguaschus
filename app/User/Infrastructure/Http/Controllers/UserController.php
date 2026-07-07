@@ -6,9 +6,9 @@ namespace App\User\Infrastructure\Http\Controllers;
 
 use App\User\Application\Actions\CreateUser;
 use App\User\Application\Actions\DeleteUser;
+use App\User\Domain\Models\User;
 use App\User\Infrastructure\Http\Requests\CreateUserRequest;
 use App\User\Infrastructure\Http\Requests\DeleteUserRequest;
-use App\User\Domain\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
