@@ -3,14 +3,10 @@ import {
     store as storeCategory,
     update as updateCategory,
 } from '@/actions/App/Category/Infrastructure/Http/Controllers/CategoryController';
+import { store as storeTransaction } from '@/actions/App/Transaction/Infrastructure/Http/Controllers/TransactionController';
 import { router } from '@inertiajs/react';
 import { useEffect, useMemo, useReducer, useRef } from 'react';
-import {
-    CHAT_REPLIES,
-    INITIAL_FILES,
-    INITIAL_RENTALS,
-    INITIAL_TRANSACTIONS,
-} from './data';
+import { CHAT_REPLIES, INITIAL_FILES, INITIAL_RENTALS } from './data';
 import type {
     Category,
     CategoryDraft,
@@ -72,7 +68,6 @@ type Action =
     | { type: 'CLOSE_TX_MODAL' }
     | { type: 'SET_TX_TYPE'; txType: TransactionType }
     | { type: 'SET_DRAFT_FIELD'; field: keyof TransactionDraft; value: string }
-    | { type: 'SUBMIT_TX' }
     | { type: 'OPEN_TX_DETAIL'; id: string }
     | { type: 'CLOSE_TX_DETAIL' }
     | { type: 'OPEN_CAT_NEW' }
@@ -82,6 +77,7 @@ type Action =
     | { type: 'SET_CAT_TYPE'; catType: TransactionType }
     | { type: 'SET_CAT_COLOR'; color: string }
     | { type: 'SET_CATEGORIES'; categories: Category[] }
+    | { type: 'SET_TRANSACTIONS'; transactions: Transaction[] }
     | { type: 'SHOW_TOAST'; message: string; ok: boolean }
     | { type: 'SET_FORM_FIELD'; field: keyof RentalForm; value: string }
     | { type: 'SUBMIT_RENTAL' }
@@ -105,12 +101,20 @@ function emptyForm(): RentalForm {
     };
 }
 
-function createInitialState(categories: Category[]): RentiaState {
+interface RentiaInit {
+    categories: Category[];
+    transactions: Transaction[];
+}
+
+function createInitialState({
+    categories,
+    transactions,
+}: RentiaInit): RentiaState {
     return {
         view: 'dashboard',
         selectedId: null,
         rentals: INITIAL_RENTALS,
-        transactions: INITIAL_TRANSACTIONS,
+        transactions,
         files: INITIAL_FILES,
         categories,
         rentalSearch: '',
@@ -280,38 +284,6 @@ function reducer(state: RentiaState, action: Action): RentiaState {
                 draft: { ...state.draft, [action.field]: action.value },
             };
 
-        case 'SUBMIT_TX': {
-            const { draft } = state;
-            if (!draft.amount || !Number(draft.amount) || !draft.rentalId) {
-                return withToast(
-                    state,
-                    'Indica un importe y un alquiler',
-                    false,
-                );
-            }
-            const tx: Transaction = {
-                id: `t${Date.now()}`,
-                rentalId: draft.rentalId,
-                date: draft.date || todayIso(),
-                type: draft.type,
-                category: draft.category,
-                concept:
-                    draft.concept ||
-                    (draft.type === 'ingreso' ? 'Ingreso' : 'Gasto'),
-                amount: Math.abs(Number(draft.amount)),
-                method: draft.method || 'Transferencia',
-            };
-            return withToast(
-                {
-                    ...state,
-                    transactions: [tx, ...state.transactions],
-                    txModalOpen: false,
-                },
-                'Transacción añadida',
-                true,
-            );
-        }
-
         case 'OPEN_TX_DETAIL':
             return { ...state, txDetailId: action.id };
 
@@ -367,6 +339,9 @@ function reducer(state: RentiaState, action: Action): RentiaState {
 
         case 'SET_CATEGORIES':
             return { ...state, categories: action.categories };
+
+        case 'SET_TRANSACTIONS':
+            return { ...state, transactions: action.transactions };
 
         case 'SHOW_TOAST':
             return withToast(state, action.message, action.ok);
@@ -515,10 +490,13 @@ export interface RentiaStore {
     actions: RentiaActions;
 }
 
-export function useRentia(categories: Category[]): RentiaStore {
+export function useRentia(
+    categories: Category[],
+    transactions: Transaction[],
+): RentiaStore {
     const [state, dispatch] = useReducer(
         reducer,
-        categories,
+        { categories, transactions },
         createInitialState,
     );
 
@@ -539,6 +517,10 @@ export function useRentia(categories: Category[]): RentiaStore {
     useEffect(() => {
         dispatch({ type: 'SET_CATEGORIES', categories });
     }, [categories]);
+
+    useEffect(() => {
+        dispatch({ type: 'SET_TRANSACTIONS', transactions });
+    }, [transactions]);
 
     const actions = useMemo<RentiaActions>(
         () => ({
@@ -564,7 +546,47 @@ export function useRentia(categories: Category[]): RentiaStore {
             setTxType: (txType) => dispatch({ type: 'SET_TX_TYPE', txType }),
             setDraftField: (field, value) =>
                 dispatch({ type: 'SET_DRAFT_FIELD', field, value }),
-            submitTx: () => dispatch({ type: 'SUBMIT_TX' }),
+            submitTx: () => {
+                const draft = stateRef.current.draft;
+                if (!draft.amount || !Number(draft.amount) || !draft.rentalId) {
+                    dispatch({
+                        type: 'SHOW_TOAST',
+                        message: 'Indica un importe y un alquiler',
+                        ok: false,
+                    });
+                    return;
+                }
+
+                const payload = {
+                    rental_id: draft.rentalId,
+                    category: draft.category,
+                    date: draft.date || todayIso(),
+                    concept:
+                        draft.concept ||
+                        (draft.type === 'ingreso' ? 'Ingreso' : 'Gasto'),
+                    amount: Math.abs(Number(draft.amount)),
+                    method: draft.method || 'Transferencia',
+                };
+
+                router.post(storeTransaction.url(), payload, {
+                    preserveScroll: true,
+                    preserveState: true,
+                    onSuccess: () => {
+                        dispatch({ type: 'CLOSE_TX_MODAL' });
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: 'Transacción añadida',
+                            ok: true,
+                        });
+                    },
+                    onError: () =>
+                        dispatch({
+                            type: 'SHOW_TOAST',
+                            message: 'Revisa los datos de la transacción',
+                            ok: false,
+                        }),
+                });
+            },
             openTxDetail: (id) => dispatch({ type: 'OPEN_TX_DETAIL', id }),
             closeTxDetail: () => dispatch({ type: 'CLOSE_TX_DETAIL' }),
             openCatNew: () => dispatch({ type: 'OPEN_CAT_NEW' }),

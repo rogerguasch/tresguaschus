@@ -1,12 +1,16 @@
 import { RentiaApp } from '@/components/rentia/rentia-app';
-import type { Category } from '@/components/rentia/types';
+import type { Category, Transaction } from '@/components/rentia/types';
 import { Head } from '@inertiajs/react';
 
 interface DashboardPageProps {
     categories: Category[];
+    transactions: Transaction[];
 }
 
-export default function Dashboard({ categories }: DashboardPageProps) {
+export default function Dashboard({
+    categories,
+    transactions,
+}: DashboardPageProps) {
     return (
         <>
             <Head title="Tresguaschus">
@@ -21,7 +25,7 @@ export default function Dashboard({ categories }: DashboardPageProps) {
                     rel="stylesheet"
                 />
             </Head>
-            <RentiaApp categories={categories} />
+            <RentiaApp categories={categories} transactions={transactions} />
         </>
     );
 }

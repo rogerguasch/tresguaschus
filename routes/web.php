@@ -5,6 +5,9 @@ declare(strict_types=1);
 use App\Category\Domain\Models\Category;
 use App\Category\Infrastructure\Http\Controllers\CategoryController;
 use App\Category\Infrastructure\Http\Resources\CategoryResource;
+use App\Transaction\Domain\Models\Transaction;
+use App\Transaction\Infrastructure\Http\Controllers\TransactionController;
+use App\Transaction\Infrastructure\Http\Resources\TransactionResource;
 use App\User\Infrastructure\Http\Controllers\SessionController;
 use App\User\Infrastructure\Http\Controllers\UserController;
 use App\User\Infrastructure\Http\Controllers\UserEmailResetNotification;
@@ -21,12 +24,18 @@ Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 // Rentia dashboard (entry point).
 Route::get('dashboard', fn () => Inertia::render('dashboard', [
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
+    'transactions' => TransactionResource::collection(
+        Transaction::query()->with('category')->orderByDesc('date')->orderByDesc('id')->get()
+    ),
 ]))->name('dashboard');
 
 // Categories... (TODO: move behind auth once the dashboard requires authentication)
 Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
 Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
 Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+// Transactions... (TODO: move behind auth once the dashboard requires authentication)
+Route::post('transactions', [TransactionController::class, 'store'])->name('transactions.store');
 
 Route::middleware('auth')->group(function (): void {
     // User...

@@ -10,6 +10,9 @@ final class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(CategorySeeder::class);
+        $this->call([
+            CategorySeeder::class,
+            TransactionSeeder::class,
+        ]);
     }
 }

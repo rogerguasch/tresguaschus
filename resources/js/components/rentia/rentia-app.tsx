@@ -5,7 +5,7 @@ import { TransactionDetailModal } from './modals/transaction-detail-modal';
 import { RentiaProvider } from './rentia-context';
 import { Sidebar } from './sidebar';
 import { Toast } from './toast';
-import type { Category, RentiaView } from './types';
+import type { Category, RentiaView, Transaction } from './types';
 import { useRentia } from './use-rentia';
 import { ChatView } from './views/chat-view';
 import { DashboardView } from './views/dashboard-view';
@@ -30,8 +30,14 @@ function CurrentView({ view }: { view: RentiaView }) {
     return <View />;
 }
 
-export function RentiaApp({ categories }: { categories: Category[] }) {
-    const store = useRentia(categories);
+export function RentiaApp({
+    categories,
+    transactions,
+}: {
+    categories: Category[];
+    transactions: Transaction[];
+}) {
+    const store = useRentia(categories, transactions);
 
     return (
         <RentiaProvider value={store}>
