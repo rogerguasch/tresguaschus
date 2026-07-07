@@ -10,8 +10,12 @@ use App\Transaction\Domain\Models\Transaction;
 
 final readonly class CreateTransactionAction
 {
-    public function handle(Category $category, TransactionData $data): Transaction
+    public function handle(TransactionData $data): Transaction
     {
+        $category = Category::query()
+            ->where('name', $data->categoryName)
+            ->firstOrFail();
+
         return Transaction::query()->create([
             'rental_id' => $data->rentalId,
             'category_id' => $category->id,

@@ -8,6 +8,7 @@ final readonly class TransactionData
 {
     public function __construct(
         public string $rentalId,
+        public string $categoryName,
         public string $date,
         public string $concept,
         public int $amount,

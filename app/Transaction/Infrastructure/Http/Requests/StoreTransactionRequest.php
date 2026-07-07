@@ -26,17 +26,11 @@ final class StoreTransactionRequest extends FormRequest
         ];
     }
 
-    public function category(): Category
-    {
-        return Category::query()
-            ->where('name', $this->string('category')->value())
-            ->firstOrFail();
-    }
-
     public function toData(): TransactionData
     {
         return new TransactionData(
             $this->string('rental_id')->value(),
+            $this->string('category')->value(),
             $this->string('date')->value(),
             $this->string('concept')->value(),
             $this->integer('amount'),

@@ -13,8 +13,7 @@ it('may create a transaction for a category', function (): void {
     $action = app(CreateTransactionAction::class);
 
     $transaction = $action->handle(
-        $category,
-        new TransactionData('r1', '2026-01-05', 'Renta mensual', 1200, 'Transferencia'),
+        new TransactionData('r1', 'Renta', '2026-01-05', 'Renta mensual', 1200, 'Transferencia'),
     );
 
     expect($transaction)->toBeInstanceOf(Transaction::class)

@@ -12,7 +12,7 @@ final readonly class CreateTransactionController
 {
     public function __invoke(StoreTransactionRequest $request, CreateTransactionAction $action): RedirectResponse
     {
-        $action->handle($request->category(), $request->toData());
+        $action->handle($request->toData());
 
         return back();
     }
