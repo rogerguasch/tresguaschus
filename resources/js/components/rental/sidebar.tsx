@@ -1,7 +1,7 @@
 import LogoutController from '@/actions/App/User/Infrastructure/Http/Controllers/LogoutController';
 import { cn } from '@/lib/utils';
 import { router, usePage } from '@inertiajs/react';
-import type { ComponentProps } from 'react';
+import { type ComponentProps, useState } from 'react';
 import { Icon } from './icon';
 import { useRentalContext } from './rental-context';
 import { shortAddress } from './utils';
@@ -41,8 +41,12 @@ export function Sidebar() {
     const { view, selectedId, rentals } = state;
 
     const user = usePage<{
-        auth: { user: { name: string; email: string } | null };
+        auth: {
+            user: { name: string; email: string; avatar: string | null } | null;
+        };
     }>().props.auth.user;
+
+    const [avatarFailed, setAvatarFailed] = useState(false);
 
     const logout = (): void => {
         router.post(LogoutController.url());
@@ -207,8 +211,18 @@ export function Sidebar() {
 
             <div className="border-t border-zinc-200 p-3">
                 <div className="flex items-center gap-2.5 px-1.5 py-1">
-                    <div className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600">
-                        {user ? initials(user.name) : '—'}
+                    <div className="flex size-[34px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600">
+                        {user?.avatar && !avatarFailed ? (
+                            <img
+                                src={user.avatar}
+                                alt={user.name}
+                                referrerPolicy="no-referrer"
+                                onError={() => setAvatarFailed(true)}
+                                className="size-full object-cover"
+                            />
+                        ) : (
+                            (user && initials(user.name)) || '—'
+                        )}
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-semibold">

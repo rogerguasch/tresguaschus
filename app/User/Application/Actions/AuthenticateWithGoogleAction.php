@@ -15,7 +15,7 @@ final readonly class AuthenticateWithGoogleAction
     /**
      * @throws EmailNotAllowed
      */
-    public function handle(string $email, string $name): User
+    public function handle(string $email, string $name, ?string $avatar): User
     {
         $allowed = config('access.emails');
         assert(is_array($allowed));
@@ -24,13 +24,22 @@ final readonly class AuthenticateWithGoogleAction
             throw new EmailNotAllowed($email);
         }
 
-        return DB::transaction(fn (): User => User::query()->firstOrCreate(
-            ['email' => $email],
-            [
-                'name' => $name,
-                'password' => Hash::make(Str::random(40)),
-                'email_verified_at' => now(),
-            ],
-        ));
+        return DB::transaction(function () use ($email, $name, $avatar): User {
+            $user = User::query()->firstOrNew(['email' => $email]);
+
+            // Keep name and avatar in sync with Google on every sign-in.
+            $user->fill(['name' => $name, 'avatar' => $avatar]);
+
+            if (! $user->exists) {
+                $user->fill([
+                    'password' => Hash::make(Str::random(40)),
+                    'email_verified_at' => now(),
+                ]);
+            }
+
+            $user->save();
+
+            return $user;
+        });
     }
 }

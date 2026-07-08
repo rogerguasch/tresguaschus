@@ -10,7 +10,11 @@ use Laravel\Socialite\Two\User as SocialiteUser;
 function fakeGoogleUser(string $email, string $name = 'Google User'): void
 {
     $socialiteUser = new SocialiteUser;
-    $socialiteUser->map(['email' => $email, 'name' => $name]);
+    $socialiteUser->map([
+        'email' => $email,
+        'name' => $name,
+        'avatar' => 'https://lh3.googleusercontent.com/a/pic',
+    ]);
 
     $provider = Mockery::mock(Provider::class);
     $provider->shouldReceive('user')->andReturn($socialiteUser);
@@ -35,7 +39,8 @@ it('logs in an allowed google account and creates the user', function (): void {
         ->assertRedirect(route('dashboard'));
 
     $this->assertAuthenticated();
-    expect(User::query()->where('email', 'ok@gmail.com')->value('name'))->toBe('Roger');
+    expect(User::query()->where('email', 'ok@gmail.com')->value('name'))->toBe('Roger')
+        ->and(User::query()->where('email', 'ok@gmail.com')->value('avatar'))->toBe('https://lh3.googleusercontent.com/a/pic');
 });
 
 it('rejects a google account that is not allowed', function (): void {

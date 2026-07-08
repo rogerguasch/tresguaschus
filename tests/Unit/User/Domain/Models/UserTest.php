@@ -13,6 +13,7 @@ test('to array', function (): void {
             'name',
             'email',
             'email_verified_at',
+            'avatar',
             'created_at',
             'updated_at',
         ]);

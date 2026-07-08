@@ -20,6 +20,7 @@ final readonly class GoogleCallbackController
             $user = $action->handle(
                 (string) $googleUser->getEmail(),
                 (string) $googleUser->getName(),
+                $googleUser->getAvatar(),
             );
         } catch (EmailNotAllowed) {
             return redirect()->route('home')->with(
