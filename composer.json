@@ -13,6 +13,7 @@
         "inertiajs/inertia-laravel": "^3.1.1",
         "laravel/fortify": "^1.37.2",
         "laravel/framework": "^13.19",
+        "laravel/nightwatch": "^1.28",
         "laravel/tinker": "^3.0.2",
         "laravel/wayfinder": "^0.1.20",
         "moneyphp/money": "^4.9",
