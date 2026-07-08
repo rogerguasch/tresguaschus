@@ -7,6 +7,7 @@ namespace App\Transaction\Application\Actions;
 use App\Category\Application\Actions\FindCategoryByNameAction;
 use App\Transaction\Application\DTOs\TransactionData;
 use App\Transaction\Domain\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 
 final readonly class CreateTransactionAction
 {
@@ -17,15 +18,17 @@ final readonly class CreateTransactionAction
 
     public function handle(TransactionData $data): Transaction
     {
-        $category = $this->findCategoryByName->handle($data->categoryName);
+        return DB::transaction(function () use ($data): Transaction {
+            $category = $this->findCategoryByName->handle($data->categoryName);
 
-        return Transaction::query()->create([
-            'rental_id' => $data->rentalId,
-            'category_id' => $category->id,
-            'date' => $data->date,
-            'concept' => $data->concept,
-            'amount' => $data->amount,
-            'method' => $data->method,
-        ]);
+            return Transaction::query()->create([
+                'rental_id' => $data->rentalId,
+                'category_id' => $category->id,
+                'date' => $data->date,
+                'concept' => $data->concept,
+                'amount' => $data->amount,
+                'method' => $data->method,
+            ]);
+        });
     }
 }
