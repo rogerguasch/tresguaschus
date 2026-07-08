@@ -1,4 +1,6 @@
+import LogoutController from '@/actions/App/User/Infrastructure/Http/Controllers/LogoutController';
 import { cn } from '@/lib/utils';
+import { router, usePage } from '@inertiajs/react';
 import type { ComponentProps } from 'react';
 import { Icon } from './icon';
 import { useRentalContext } from './rental-context';
@@ -6,6 +8,15 @@ import { shortAddress } from './utils';
 
 interface NavButtonProps extends ComponentProps<'button'> {
     active: boolean;
+}
+
+function initials(name: string): string {
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? '')
+        .join('');
 }
 
 function NavButton({ active, className, children, ...props }: NavButtonProps) {
@@ -28,6 +39,14 @@ function NavButton({ active, className, children, ...props }: NavButtonProps) {
 export function Sidebar() {
     const { state, actions } = useRentalContext();
     const { view, selectedId, rentals } = state;
+
+    const user = usePage<{
+        auth: { user: { name: string; email: string } | null };
+    }>().props.auth.user;
+
+    const logout = (): void => {
+        router.post(LogoutController.url());
+    };
 
     const isDashboard = view === 'dashboard';
     const isTransactions = view === 'transactions';
@@ -189,17 +208,19 @@ export function Sidebar() {
             <div className="border-t border-zinc-200 p-3">
                 <div className="flex items-center gap-2.5 px-1.5 py-1">
                     <div className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-zinc-200 text-xs font-semibold text-zinc-600">
-                        MG
+                        {user ? initials(user.name) : '—'}
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-semibold">
-                            María G. Ortiz
+                            {user?.name ?? 'Invitado'}
                         </div>
-                        <div className="text-xs text-zinc-500">Propietaria</div>
+                        <div className="truncate text-xs text-zinc-500">
+                            {user?.email ?? ''}
+                        </div>
                     </div>
                     <button
                         title="Cerrar sesión"
-                        onClick={() => actions.navigate('dashboard')}
+                        onClick={logout}
                         className="flex size-[34px] shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white transition hover:border-red-200 hover:bg-red-50"
                     >
                         <Icon
