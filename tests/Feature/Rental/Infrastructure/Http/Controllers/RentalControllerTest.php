@@ -5,7 +5,10 @@ declare(strict_types=1);
 use App\Rental\Domain\Enums\RentalStatus;
 use App\Rental\Domain\Models\Rental;
 use App\Rental\Domain\Models\Tenant;
+use App\User\Domain\Models\User;
 use Money\Money;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 /**
  * @param  array<string, mixed>  $overrides

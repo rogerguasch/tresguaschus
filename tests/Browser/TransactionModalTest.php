@@ -5,7 +5,10 @@ declare(strict_types=1);
 use App\Category\Domain\Models\Category;
 use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Models\Transaction;
+use App\User\Domain\Models\User;
 use Money\Money;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 it('surfaces a server validation error on the field', function (): void {
     Rental::factory()->create();

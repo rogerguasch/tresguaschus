@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
+use App\User\Domain\Models\User;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 it('paginates the transactions table beyond 20 rows', function (): void {
     $category = Category::factory()->create();

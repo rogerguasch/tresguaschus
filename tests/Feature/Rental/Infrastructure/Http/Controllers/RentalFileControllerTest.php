@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 use App\Rental\Domain\Models\Rental;
 use App\Rental\Domain\Models\RentalFile;
+use App\User\Domain\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 it('uploads files to a rental', function (): void {
     Storage::fake();

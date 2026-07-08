@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use App\Rental\Domain\Enums\RentalStatus;
 use App\Rental\Domain\Models\Rental;
+use App\User\Domain\Models\User;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 it('creates a rental from the form', function (): void {
     $page = visit(route('dashboard'));

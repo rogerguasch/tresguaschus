@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
+use App\User\Domain\Models\User;
+
+beforeEach(fn () => $this->actingAs(User::factory()->create()));
 
 it('surfaces a unique-name error in the category modal', function (): void {
     Category::factory()->gasto()->create(['name' => 'Comunidad']);
