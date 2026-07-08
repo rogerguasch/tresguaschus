@@ -40,16 +40,20 @@ export function SelectInput({
 interface FieldProps {
     label: string;
     children: ReactNode;
+    error?: string;
 }
 
 /** Labelled form control wrapper. */
-export function Field({ label, children }: FieldProps) {
+export function Field({ label, children, error }: FieldProps) {
     return (
         <div>
             <label className="mb-1.5 block text-[13px] font-medium">
                 {label}
             </label>
             {children}
+            {error ? (
+                <p className="mt-1 text-[13px] text-red-600">{error}</p>
+            ) : null}
         </div>
     );
 }

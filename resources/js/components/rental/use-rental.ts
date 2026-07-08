@@ -1,13 +1,9 @@
-import CreateCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/CreateCategoryController';
 import DeleteCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/DeleteCategoryController';
-import UpdateCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/UpdateCategoryController';
-import CreateTransactionController from '@/actions/App/Transaction/Infrastructure/Http/Controllers/CreateTransactionController';
 import { router } from '@inertiajs/react';
-import { useEffect, useMemo, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { CHAT_REPLIES, INITIAL_FILES, INITIAL_RENTALS } from './data';
 import type {
     Category,
-    CategoryDraft,
     ChatMessage,
     DashboardFilters,
     DetailFilters,
@@ -17,9 +13,7 @@ import type {
     RentalView,
     Toast,
     Transaction,
-    TransactionDraft,
     TransactionsFilters,
-    TransactionType,
 } from './types';
 import { todayIso } from './utils';
 
@@ -39,11 +33,8 @@ interface RentalState {
     chatMessages: ChatMessage[];
     chatInput: string;
     chatReplyIndex: number;
-    catModalOpen: boolean;
-    catEditing: boolean;
-    catDraft: CategoryDraft;
-    txModalOpen: boolean;
-    draft: TransactionDraft;
+    catModal: { open: boolean; editingId: string | null };
+    txModal: { open: boolean; rentalId: string | null };
     txDetailId: string | null;
     form: RentalForm;
     toast: Toast | null;
@@ -64,16 +55,11 @@ type Action =
     | { type: 'CLEAR_TX_FILTERS' }
     | { type: 'OPEN_TX_MODAL'; rentalId: string | null }
     | { type: 'CLOSE_TX_MODAL' }
-    | { type: 'SET_TX_TYPE'; txType: TransactionType }
-    | { type: 'SET_DRAFT_FIELD'; field: keyof TransactionDraft; value: string }
     | { type: 'OPEN_TX_DETAIL'; id: string }
     | { type: 'CLOSE_TX_DETAIL' }
     | { type: 'OPEN_CAT_NEW' }
     | { type: 'OPEN_CAT_EDIT'; id: string }
     | { type: 'CLOSE_CAT_MODAL' }
-    | { type: 'SET_CAT_NAME'; value: string }
-    | { type: 'SET_CAT_TYPE'; catType: TransactionType }
-    | { type: 'SET_CAT_COLOR'; color: string }
     | { type: 'SET_CATEGORIES'; categories: Category[] }
     | { type: 'SET_TRANSACTIONS'; transactions: Transaction[] }
     | { type: 'SHOW_TOAST'; message: string; ok: boolean }
@@ -129,19 +115,8 @@ function createInitialState({
         ],
         chatInput: '',
         chatReplyIndex: 0,
-        catModalOpen: false,
-        catEditing: false,
-        catDraft: { id: null, name: '', type: 'gasto', color: '#ef4444' },
-        txModalOpen: false,
-        draft: {
-            type: 'ingreso',
-            rentalId: '',
-            date: todayIso(),
-            category: 'Renta',
-            concept: '',
-            amount: '',
-            method: 'Transferencia',
-        },
+        catModal: { open: false, editingId: null },
+        txModal: { open: false, rentalId: null },
         txDetailId: null,
         form: emptyForm(),
         toast: null,
@@ -242,45 +217,14 @@ function reducer(state: RentalState, action: Action): RentalState {
                 filters: { rentalId: 'all', month: 'all', year: 'all' },
             };
 
-        case 'OPEN_TX_MODAL': {
-            const fallback =
-                state.rentals.find((r) => r.status === 'Alquilado') ??
-                state.rentals[0];
-            const type: TransactionType = 'ingreso';
+        case 'OPEN_TX_MODAL':
             return {
                 ...state,
-                txModalOpen: true,
-                draft: {
-                    type,
-                    rentalId: action.rentalId ?? fallback?.id ?? '',
-                    date: todayIso(),
-                    category: 'Renta',
-                    concept: '',
-                    amount: '',
-                    method: 'Transferencia',
-                },
+                txModal: { open: true, rentalId: action.rentalId },
             };
-        }
 
         case 'CLOSE_TX_MODAL':
-            return { ...state, txModalOpen: false };
-
-        case 'SET_TX_TYPE':
-            return {
-                ...state,
-                draft: {
-                    ...state.draft,
-                    type: action.txType,
-                    category:
-                        action.txType === 'ingreso' ? 'Renta' : 'Reparaciones',
-                },
-            };
-
-        case 'SET_DRAFT_FIELD':
-            return {
-                ...state,
-                draft: { ...state.draft, [action.field]: action.value },
-            };
+            return { ...state, txModal: { open: false, rentalId: null } };
 
         case 'OPEN_TX_DETAIL':
             return { ...state, txDetailId: action.id };
@@ -289,51 +233,16 @@ function reducer(state: RentalState, action: Action): RentalState {
             return { ...state, txDetailId: null };
 
         case 'OPEN_CAT_NEW':
-            return {
-                ...state,
-                catModalOpen: true,
-                catEditing: false,
-                catDraft: {
-                    id: null,
-                    name: '',
-                    type: 'gasto',
-                    color: '#ef4444',
-                },
-            };
+            return { ...state, catModal: { open: true, editingId: null } };
 
-        case 'OPEN_CAT_EDIT': {
-            const category = state.categories.find((c) => c.id === action.id);
-            if (!category) {
-                return state;
-            }
+        case 'OPEN_CAT_EDIT':
             return {
                 ...state,
-                catModalOpen: true,
-                catEditing: true,
-                catDraft: { ...category },
+                catModal: { open: true, editingId: action.id },
             };
-        }
 
         case 'CLOSE_CAT_MODAL':
-            return { ...state, catModalOpen: false };
-
-        case 'SET_CAT_NAME':
-            return {
-                ...state,
-                catDraft: { ...state.catDraft, name: action.value },
-            };
-
-        case 'SET_CAT_TYPE':
-            return {
-                ...state,
-                catDraft: { ...state.catDraft, type: action.catType },
-            };
-
-        case 'SET_CAT_COLOR':
-            return {
-                ...state,
-                catDraft: { ...state.catDraft, color: action.color },
-            };
+            return { ...state, catModal: { open: false, editingId: null } };
 
         case 'SET_CATEGORIES':
             return { ...state, categories: action.categories };
@@ -463,19 +372,13 @@ export interface RentalActions {
     clearTxFilters: () => void;
     openTxModal: (rentalId?: string | null) => void;
     closeTxModal: () => void;
-    setTxType: (txType: TransactionType) => void;
-    setDraftField: (field: keyof TransactionDraft, value: string) => void;
-    submitTx: () => void;
     openTxDetail: (id: string) => void;
     closeTxDetail: () => void;
     openCatNew: () => void;
     openCatEdit: (id: string) => void;
     closeCatModal: () => void;
-    setCatName: (value: string) => void;
-    setCatType: (catType: TransactionType) => void;
-    setCatColor: (color: string) => void;
-    saveCat: () => void;
     deleteCat: (id: string) => void;
+    showToast: (message: string, ok: boolean) => void;
     setFormField: (field: keyof RentalForm, value: string) => void;
     submitRental: () => void;
     uploadFiles: (files: Array<{ name: string; size: number }>) => void;
@@ -497,9 +400,6 @@ export function useRental(
         { categories, transactions },
         createInitialState,
     );
-
-    const stateRef = useRef(state);
-    stateRef.current = state;
 
     useEffect(() => {
         if (!state.toast) {
@@ -541,107 +441,11 @@ export function useRental(
             openTxModal: (rentalId = null) =>
                 dispatch({ type: 'OPEN_TX_MODAL', rentalId }),
             closeTxModal: () => dispatch({ type: 'CLOSE_TX_MODAL' }),
-            setTxType: (txType) => dispatch({ type: 'SET_TX_TYPE', txType }),
-            setDraftField: (field, value) =>
-                dispatch({ type: 'SET_DRAFT_FIELD', field, value }),
-            submitTx: () => {
-                const draft = stateRef.current.draft;
-                if (!draft.amount || !Number(draft.amount) || !draft.rentalId) {
-                    dispatch({
-                        type: 'SHOW_TOAST',
-                        message: 'Indica un importe y un alquiler',
-                        ok: false,
-                    });
-                    return;
-                }
-
-                const payload = {
-                    rental_id: draft.rentalId,
-                    category: draft.category,
-                    date: draft.date || todayIso(),
-                    concept:
-                        draft.concept ||
-                        (draft.type === 'ingreso' ? 'Ingreso' : 'Gasto'),
-                    amount: Math.abs(Number(draft.amount)),
-                    method: draft.method || 'Transferencia',
-                };
-
-                router.post(CreateTransactionController.url(), payload, {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        dispatch({ type: 'CLOSE_TX_MODAL' });
-                        dispatch({
-                            type: 'SHOW_TOAST',
-                            message: 'Transacción añadida',
-                            ok: true,
-                        });
-                    },
-                    onError: () =>
-                        dispatch({
-                            type: 'SHOW_TOAST',
-                            message: 'Revisa los datos de la transacción',
-                            ok: false,
-                        }),
-                });
-            },
             openTxDetail: (id) => dispatch({ type: 'OPEN_TX_DETAIL', id }),
             closeTxDetail: () => dispatch({ type: 'CLOSE_TX_DETAIL' }),
             openCatNew: () => dispatch({ type: 'OPEN_CAT_NEW' }),
             openCatEdit: (id) => dispatch({ type: 'OPEN_CAT_EDIT', id }),
             closeCatModal: () => dispatch({ type: 'CLOSE_CAT_MODAL' }),
-            setCatName: (value) => dispatch({ type: 'SET_CAT_NAME', value }),
-            setCatType: (catType) =>
-                dispatch({ type: 'SET_CAT_TYPE', catType }),
-            setCatColor: (color) => dispatch({ type: 'SET_CAT_COLOR', color }),
-            saveCat: () => {
-                const draft = stateRef.current.catDraft;
-                const name = draft.name.trim();
-                if (!name) {
-                    dispatch({
-                        type: 'SHOW_TOAST',
-                        message: 'Escribe un nombre de categoría',
-                        ok: false,
-                    });
-                    return;
-                }
-
-                const payload = { name, type: draft.type, color: draft.color };
-                const options = {
-                    preserveScroll: true,
-                    preserveState: true,
-                    onSuccess: () => {
-                        dispatch({ type: 'CLOSE_CAT_MODAL' });
-                        dispatch({
-                            type: 'SHOW_TOAST',
-                            message: draft.id
-                                ? 'Categoría actualizada'
-                                : 'Categoría creada',
-                            ok: true,
-                        });
-                    },
-                    onError: () =>
-                        dispatch({
-                            type: 'SHOW_TOAST',
-                            message: 'Revisa los datos de la categoría',
-                            ok: false,
-                        }),
-                };
-
-                if (draft.id) {
-                    router.patch(
-                        UpdateCategoryController.url(Number(draft.id)),
-                        payload,
-                        options,
-                    );
-                } else {
-                    router.post(
-                        CreateCategoryController.url(),
-                        payload,
-                        options,
-                    );
-                }
-            },
             deleteCat: (id) => {
                 router.delete(DeleteCategoryController.url(Number(id)), {
                     preserveScroll: true,
@@ -660,6 +464,8 @@ export function useRental(
                         }),
                 });
             },
+            showToast: (message, ok) =>
+                dispatch({ type: 'SHOW_TOAST', message, ok }),
             setFormField: (field, value) =>
                 dispatch({ type: 'SET_FORM_FIELD', field, value }),
             submitRental: () => dispatch({ type: 'SUBMIT_RENTAL' }),

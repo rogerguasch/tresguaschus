@@ -88,16 +88,6 @@ export interface TransactionsFilters {
     year: string;
 }
 
-export interface TransactionDraft {
-    type: TransactionType;
-    rentalId: string;
-    date: string;
-    category: string;
-    concept: string;
-    amount: string;
-    method: string;
-}
-
 export interface RentalForm {
     address: string;
     city: string;
@@ -109,13 +99,6 @@ export interface RentalForm {
     tenantPhone: string;
     contractStart: string;
     contractEnd: string;
-}
-
-export interface CategoryDraft {
-    id: string | null;
-    name: string;
-    type: TransactionType;
-    color: string;
 }
 
 export interface Toast {
