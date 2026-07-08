@@ -1,3 +1,5 @@
+import UploadRentalFilesController from '@/actions/App/Rental/Infrastructure/Http/Controllers/UploadRentalFilesController';
+import { router } from '@inertiajs/react';
 import { type ChangeEvent, useMemo } from 'react';
 import { Sparkline } from '../charts/sparkline';
 import { Icon } from '../icon';
@@ -37,14 +39,8 @@ function InfoRow({
 
 export function RentalDetailView() {
     const { state, actions } = useRentalContext();
-    const {
-        rentals,
-        transactions,
-        files,
-        categories,
-        selectedId,
-        detailFilters,
-    } = state;
+    const { rentals, transactions, categories, selectedId, detailFilters } =
+        state;
 
     const rental = useMemo(
         () => rentals.find((r) => r.id === selectedId) ?? null,
@@ -91,7 +87,7 @@ export function RentalDetailView() {
             ),
         );
 
-        const fileList = (files[rental.id] ?? []).map((f) => {
+        const fileList = rental.files.map((f) => {
             const isImage = IMAGE_RE.test(f.name);
             return {
                 ...f,
@@ -117,7 +113,7 @@ export function RentalDetailView() {
             expSeries,
             files: fileList,
         };
-    }, [rental, transactions, files, categories, detailFilters, rentalsMap]);
+    }, [rental, transactions, categories, detailFilters, rentalsMap]);
 
     if (!rental || !data) {
         return null;
@@ -129,12 +125,32 @@ export function RentalDetailView() {
         detailFilters.category !== 'all';
 
     const onUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        const uploaded = Array.from(e.target.files ?? []).map((f) => ({
-            name: f.name,
-            size: f.size,
-        }));
-        actions.uploadFiles(uploaded);
+        const files = Array.from(e.target.files ?? []);
         e.target.value = '';
+
+        if (files.length === 0) {
+            return;
+        }
+
+        router.post(
+            UploadRentalFilesController.url({ rental: Number(rental.id) }),
+            { files },
+            {
+                forceFormData: true,
+                preserveScroll: true,
+                preserveState: true,
+                onSuccess: () =>
+                    actions.showToast(
+                        `${files.length} archivo(s) subido(s)`,
+                        true,
+                    ),
+                onError: () =>
+                    actions.showToast(
+                        'No se pudieron subir los archivos',
+                        false,
+                    ),
+            },
+        );
     };
 
     return (
@@ -297,9 +313,9 @@ export function RentalDetailView() {
                                     para empezar.
                                 </div>
                             ) : (
-                                data.files.map((f, i) => (
+                                data.files.map((f) => (
                                     <div
-                                        key={`${f.name}-${i}`}
+                                        key={f.id}
                                         className="flex items-center gap-3 border-b border-zinc-100 py-[11px] last:border-b-0"
                                     >
                                         <span
@@ -322,14 +338,17 @@ export function RentalDetailView() {
                                                 {f.dateFmt}
                                             </div>
                                         </div>
-                                        <button className="flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white transition hover:bg-zinc-100">
+                                        <a
+                                            href={f.url}
+                                            className="flex size-[30px] shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white transition hover:bg-zinc-100"
+                                        >
                                             <Icon
                                                 name="download"
                                                 width={14}
                                                 height={14}
                                                 className="text-zinc-600"
                                             />
-                                        </button>
+                                        </a>
                                     </div>
                                 ))
                             )}

@@ -67,6 +67,13 @@ it('passes rentals with their tenant from the backend to the dashboard', functio
         'phone' => '+34 612 345 678',
         'since' => '2024-09-01',
     ]);
+    $rental->files()->create([
+        'name' => 'contrato.pdf',
+        'kind' => 'Documento',
+        'path' => 'rental-files/1/contrato.pdf',
+        'mime_type' => 'application/pdf',
+        'size' => 253_952,
+    ]);
 
     Rental::factory()->vacant()->create();
 
@@ -80,6 +87,9 @@ it('passes rentals with their tenant from the backend to the dashboard', functio
             ->where('rentals.0.city', 'Madrid')
             ->where('rentals.0.tenant.name', 'Laura Giménez')
             ->where('rentals.0.tenant.since', '2024-09-01')
+            ->has('rentals.0.files', 1)
+            ->where('rentals.0.files.0.name', 'contrato.pdf')
+            ->where('rentals.0.files.0.size', '248 KB')
             ->where('rentals.1.tenant', null)
             ->where('rentals.1.status', 'Vacío'));
 });

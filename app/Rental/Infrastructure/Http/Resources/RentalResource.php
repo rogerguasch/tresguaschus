@@ -37,6 +37,7 @@ final class RentalResource extends JsonResource
                 'phone' => $this->tenant->phone,
                 'since' => $this->tenant->since->format('Y-m-d'),
             ],
+            'files' => RentalFileResource::collection($this->files),
         ];
     }
 

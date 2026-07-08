@@ -1,27 +1,24 @@
 import DeleteCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/DeleteCategoryController';
 import { router } from '@inertiajs/react';
 import { useEffect, useMemo, useReducer } from 'react';
-import { CHAT_REPLIES, INITIAL_FILES } from './data';
+import { CHAT_REPLIES } from './data';
 import type {
     Category,
     ChatMessage,
     DashboardFilters,
     DetailFilters,
     Rental,
-    RentalFile,
     RentalView,
     Toast,
     Transaction,
     TransactionsFilters,
 } from './types';
-import { todayIso } from './utils';
 
 interface RentalState {
     view: RentalView;
     selectedId: string | null;
     rentals: Rental[];
     transactions: Transaction[];
-    files: Record<string, RentalFile[]>;
     categories: Category[];
     rentalSearch: string;
     dashFilters: DashboardFilters;
@@ -62,7 +59,6 @@ type Action =
     | { type: 'SET_CATEGORIES'; categories: Category[] }
     | { type: 'SET_TRANSACTIONS'; transactions: Transaction[] }
     | { type: 'SHOW_TOAST'; message: string; ok: boolean }
-    | { type: 'UPLOAD_FILES'; files: Array<{ name: string; size: number }> }
     | { type: 'SET_CHAT_INPUT'; value: string }
     | { type: 'SEND_CHAT'; text: string }
     | { type: 'DISMISS_TOAST' };
@@ -83,7 +79,6 @@ function createInitialState({
         selectedId: null,
         rentals,
         transactions,
-        files: INITIAL_FILES,
         categories,
         rentalSearch: '',
         dashFilters: { rentalId: 'all', from: '2026-01-01', to: '2026-06-30' },
@@ -235,30 +230,6 @@ function reducer(state: RentalState, action: Action): RentalState {
         case 'SHOW_TOAST':
             return withToast(state, action.message, action.ok);
 
-        case 'UPLOAD_FILES': {
-            const id = state.selectedId;
-            if (!id || !action.files.length) {
-                return state;
-            }
-            const added: RentalFile[] = action.files.map((file) => ({
-                name: file.name,
-                kind: 'Documento',
-                size: `${Math.max(1, Math.round(file.size / 1024))} KB`,
-                date: todayIso(),
-            }));
-            return withToast(
-                {
-                    ...state,
-                    files: {
-                        ...state.files,
-                        [id]: [...(state.files[id] ?? []), ...added],
-                    },
-                },
-                `${action.files.length} archivo(s) subido(s)`,
-                true,
-            );
-        }
-
         case 'SET_CHAT_INPUT':
             return { ...state, chatInput: action.value };
 
@@ -310,7 +281,6 @@ export interface RentalActions {
     closeCatModal: () => void;
     deleteCat: (id: string) => void;
     showToast: (message: string, ok: boolean) => void;
-    uploadFiles: (files: Array<{ name: string; size: number }>) => void;
     setChatInput: (value: string) => void;
     sendChat: (text: string) => void;
 }
@@ -400,7 +370,6 @@ export function useRental(
             },
             showToast: (message, ok) =>
                 dispatch({ type: 'SHOW_TOAST', message, ok }),
-            uploadFiles: (files) => dispatch({ type: 'UPLOAD_FILES', files }),
             setChatInput: (value) =>
                 dispatch({ type: 'SET_CHAT_INPUT', value }),
             sendChat: (text) => dispatch({ type: 'SEND_CHAT', text }),

@@ -38,6 +38,7 @@ export interface Rental {
     contractEnd: string | null;
     status: RentalStatus;
     tenant: Tenant | null;
+    files: RentalFile[];
 }
 
 export interface Transaction {
@@ -52,10 +53,12 @@ export interface Transaction {
 }
 
 export interface RentalFile {
+    id: string;
     name: string;
     kind: string;
     size: string;
     date: string;
+    url: string;
 }
 
 export interface Category {

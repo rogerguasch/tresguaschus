@@ -10,8 +10,10 @@ use App\Rental\Domain\Enums\RentalStatus;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Database\Factories\RentalFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Money\Money;
 
@@ -26,6 +28,7 @@ use Money\Money;
  * @property-read ?CarbonImmutable $contract_end
  * @property-read RentalStatus $status
  * @property-read ?Tenant $tenant
+ * @property-read Collection<int, RentalFile> $files
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
  */
@@ -42,6 +45,14 @@ final class Rental extends Model
     public function tenant(): HasOne
     {
         return $this->hasOne(Tenant::class);
+    }
+
+    /**
+     * @return HasMany<RentalFile, $this>
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(RentalFile::class);
     }
 
     /**

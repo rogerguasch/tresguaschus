@@ -9,6 +9,8 @@ use App\Category\Infrastructure\Http\Controllers\UpdateCategoryController;
 use App\Category\Infrastructure\Http\Resources\CategoryResource;
 use App\Rental\Domain\Models\Rental;
 use App\Rental\Infrastructure\Http\Controllers\CreateRentalController;
+use App\Rental\Infrastructure\Http\Controllers\DownloadRentalFileController;
+use App\Rental\Infrastructure\Http\Controllers\UploadRentalFilesController;
 use App\Rental\Infrastructure\Http\Resources\RentalResource;
 use App\Transaction\Domain\Models\Transaction;
 use App\Transaction\Infrastructure\Http\Controllers\CreateTransactionController;
@@ -29,7 +31,7 @@ Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 // Rental dashboard (entry point).
 Route::get('dashboard', fn () => Inertia::render('dashboard', [
     'rentals' => RentalResource::collection(
-        Rental::query()->with('tenant')->orderBy('id')->get()
+        Rental::query()->with(['tenant', 'files'])->orderBy('id')->get()
     ),
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
     'transactions' => TransactionResource::collection(
@@ -43,6 +45,8 @@ Route::get('dashboard', fn () => Inertia::render('dashboard', [
 
 // Rentals... (TODO: move behind auth once the dashboard requires authentication)
 Route::post('rentals', CreateRentalController::class)->name('rentals.store');
+Route::post('rentals/{rental}/files', UploadRentalFilesController::class)->name('rentals.files.store');
+Route::get('rental-files/{rentalFile}', DownloadRentalFileController::class)->name('rental-files.download');
 
 // Categories... (TODO: move behind auth once the dashboard requires authentication)
 Route::post('categories', CreateCategoryController::class)->name('categories.store');
