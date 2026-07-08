@@ -13,12 +13,13 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table): void {
             $table->id();
             $table->string('rental_id');
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->constrained();
             $table->date('date');
             $table->string('concept');
-            $table->unsignedInteger('amount');
+            $table->unsignedBigInteger('amount'); // Stored in minor units (cents).
             $table->string('method');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
+use Money\Money;
 
 it('surfaces a server validation error on the field', function (): void {
     Category::factory()->ingreso()->create(['name' => 'Renta']);
@@ -14,7 +15,7 @@ it('surfaces a server validation error on the field', function (): void {
         ->click('Nueva transacción')
         ->assertSee('Registra un ingreso o un gasto')
         ->click('Guardar')
-        ->assertSee('at least 1')
+        ->assertSee('at least 0.01')
         ->assertSee('Registra un ingreso o un gasto')
         ->assertNoJavaScriptErrors();
 
@@ -32,5 +33,5 @@ it('creates a transaction from the modal', function (): void {
         ->assertSee('Transacción añadida')
         ->assertNoJavaScriptErrors();
 
-    expect(Transaction::query()->where('amount', 1200)->exists())->toBeTrue();
+    expect(Transaction::query()->firstOrFail()->amount->equals(Money::EUR(120_000)))->toBeTrue();
 });

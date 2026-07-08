@@ -131,5 +131,6 @@ it('may destroy a category', function (): void {
 
     $response->assertRedirect(route('dashboard'));
 
-    expect($category->fresh())->toBeNull();
+    $this->assertSoftDeleted($category);
+    expect(Category::query()->find($category->id))->toBeNull();
 });

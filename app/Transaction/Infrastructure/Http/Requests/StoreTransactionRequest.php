@@ -8,6 +8,10 @@ use App\Category\Domain\Models\Category;
 use App\Transaction\Application\DTOs\TransactionData;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Money\Currencies\ISOCurrencies;
+use Money\Currency;
+use Money\Money;
+use Money\Parser\DecimalMoneyParser;
 
 final class StoreTransactionRequest extends FormRequest
 {
@@ -18,10 +22,10 @@ final class StoreTransactionRequest extends FormRequest
     {
         return [
             'rental_id' => ['required', 'string', 'max:255'],
-            'category' => ['required', 'string', Rule::exists(Category::class, 'name')],
+            'category' => ['required', 'string', Rule::exists(Category::class, 'name')->withoutTrashed()],
             'date' => ['required', 'date'],
             'concept' => ['required', 'string', 'max:255'],
-            'amount' => ['required', 'integer', 'min:1'],
+            'amount' => ['required', 'numeric', 'decimal:0,2', 'min:0.01'],
             'method' => ['required', 'string', 'max:255'],
         ];
     }
@@ -33,8 +37,14 @@ final class StoreTransactionRequest extends FormRequest
             $this->string('category')->value(),
             $this->string('date')->value(),
             $this->string('concept')->value(),
-            $this->integer('amount'),
+            $this->amount(),
             $this->string('method')->value(),
         );
+    }
+
+    private function amount(): Money
+    {
+        return (new DecimalMoneyParser(new ISOCurrencies()))
+            ->parse($this->string('amount')->value(), new Currency('EUR'));
     }
 }

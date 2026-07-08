@@ -18,7 +18,7 @@ final class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique(Category::class)],
+            'name' => ['required', 'string', 'max:255', Rule::unique(Category::class)->withoutTrashed()],
             'type' => ['required', Rule::enum(TransactionType::class)],
             'color' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ];

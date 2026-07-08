@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Transaction\Application\DTOs;
 
+use Money\Money;
+
 final readonly class TransactionData
 {
     public function __construct(
@@ -11,7 +13,7 @@ final readonly class TransactionData
         public string $categoryName,
         public string $date,
         public string $concept,
-        public int $amount,
+        public Money $amount,
         public string $method,
     ) {}
 }

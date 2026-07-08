@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Money\Money;
 
 /**
  * @extends Factory<Transaction>
@@ -28,7 +29,7 @@ final class TransactionFactory extends Factory
             'category_id' => Category::factory(),
             'date' => fake()->dateTimeBetween('-1 year')->format('Y-m-d'),
             'concept' => fake()->sentence(3),
-            'amount' => fake()->numberBetween(50, 2000),
+            'amount' => Money::EUR(fake()->numberBetween(5_000, 200_000)),
             'method' => fake()->randomElement([
                 'Transferencia',
                 'Domiciliado',

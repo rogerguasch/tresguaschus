@@ -7,6 +7,8 @@ namespace App\Transaction\Infrastructure\Http\Resources;
 use App\Transaction\Domain\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Money\Currencies\ISOCurrencies;
+use Money\Formatter\DecimalMoneyFormatter;
 
 /**
  * @mixin Transaction
@@ -25,7 +27,7 @@ final class TransactionResource extends JsonResource
             'type' => $this->category->type->value,
             'category' => $this->category->name,
             'concept' => $this->concept,
-            'amount' => $this->amount,
+            'amount' => (float) (new DecimalMoneyFormatter(new ISOCurrencies()))->format($this->amount),
             'method' => $this->method,
         ];
     }

@@ -9,6 +9,7 @@ use Carbon\CarbonInterface;
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property-read int $id
@@ -17,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read string $color
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read ?CarbonInterface $deleted_at
  */
 final class Category extends Model
 {
@@ -24,6 +26,8 @@ final class Category extends Model
      * @use HasFactory<CategoryFactory>
      */
     use HasFactory;
+
+    use SoftDeletes;
 
     /**
      * @return array<string, string>
@@ -37,6 +41,7 @@ final class Category extends Model
             'color' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Transaction\Domain\Models;
 
 use App\Category\Domain\Models\Category;
+use App\Transaction\Domain\Casts\MoneyCast;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Money\Money;
 
 /**
  * @property-read int $id
@@ -18,11 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int $category_id
  * @property-read CarbonImmutable $date
  * @property-read string $concept
- * @property-read int $amount
+ * @property-read Money $amount
  * @property-read string $method
  * @property-read Category $category
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
+ * @property-read ?CarbonInterface $deleted_at
  */
 final class Transaction extends Model
 {
@@ -31,12 +35,17 @@ final class Transaction extends Model
      */
     use HasFactory;
 
+    use SoftDeletes;
+
     /**
+     * A transaction keeps its category even after the category is archived
+     * (soft-deleted), so the relation resolves trashed categories too.
+     *
      * @return BelongsTo<Category, $this>
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
     /**
@@ -50,10 +59,11 @@ final class Transaction extends Model
             'category_id' => 'integer',
             'date' => 'date',
             'concept' => 'string',
-            'amount' => 'integer',
+            'amount' => MoneyCast::class,
             'method' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 

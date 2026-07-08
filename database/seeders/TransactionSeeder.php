@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
 use Illuminate\Database\Seeder;
+use Money\Money;
 
 final class TransactionSeeder extends Seeder
 {
@@ -24,7 +25,7 @@ final class TransactionSeeder extends Seeder
                 ],
                 [
                     'category_id' => $categoryIds[$transaction['category']],
-                    'amount' => $transaction['amount'],
+                    'amount' => Money::EUR($transaction['amount'] * 100),
                     'method' => $transaction['method'],
                 ],
             );

@@ -27,7 +27,11 @@ Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 Route::get('dashboard', fn () => Inertia::render('dashboard', [
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
     'transactions' => TransactionResource::collection(
-        Transaction::query()->with('category')->orderByDesc('date')->orderByDesc('id')->get()
+        Transaction::query()
+            ->with('category')
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->get()
     ),
 ]))->name('dashboard');
 

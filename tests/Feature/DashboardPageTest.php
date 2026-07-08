@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
+use Money\Money;
 
 it('renders the dashboard single-page app', function (): void {
     $this->get(route('dashboard'))
@@ -35,7 +36,7 @@ it('passes transactions from the backend to the dashboard', function (): void {
         'rental_id' => 'r1',
         'date' => '2026-01-05',
         'concept' => 'Renta mensual',
-        'amount' => 1200,
+        'amount' => Money::EUR(120_000),
         'method' => 'Transferencia',
     ]);
 

@@ -15,6 +15,7 @@
         "laravel/framework": "^13.19",
         "laravel/tinker": "^3.0.2",
         "laravel/wayfinder": "^0.1.20",
+        "moneyphp/money": "^4.9",
         "nunomaduro/essentials": "^1.2.0"
     },
     "require-dev": {

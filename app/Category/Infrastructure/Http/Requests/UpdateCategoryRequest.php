@@ -22,7 +22,7 @@ final class UpdateCategoryRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique(Category::class)->ignore($this->route('category')),
+                Rule::unique(Category::class)->ignore($this->route('category'))->withoutTrashed(),
             ],
             'type' => ['required', Rule::enum(TransactionType::class)],
             'color' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],

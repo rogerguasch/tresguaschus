@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
 use App\Transaction\Domain\Models\Transaction;
+use Money\Money;
 
 function validTransaction(array $overrides = []): array
 {
@@ -30,8 +31,17 @@ it('allows guests to store a transaction for a category', function (): void {
     expect($transaction->category_id)->toBe($category->id)
         ->and($transaction->rental_id)->toBe('r1')
         ->and($transaction->concept)->toBe('Renta mensual')
-        ->and($transaction->amount)->toBe(1200)
+        ->and($transaction->amount->equals(Money::EUR(120_000)))->toBeTrue()
         ->and($transaction->method)->toBe('Transferencia');
+});
+
+it('stores fractional euro amounts as minor units', function (): void {
+    Category::factory()->ingreso()->create(['name' => 'Renta']);
+
+    $this->fromRoute('dashboard')
+        ->post(route('transactions.store'), validTransaction(['amount' => '99.95']));
+
+    expect(Transaction::query()->firstOrFail()->amount->equals(Money::EUR(9_995)))->toBeTrue();
 });
 
 it('requires an existing category', function (): void {
@@ -43,7 +53,7 @@ it('requires an existing category', function (): void {
     $response->assertSessionHasErrors('category');
 });
 
-it('requires a positive integer amount', function (string|int $amount): void {
+it('requires a valid positive amount', function (string|int $amount): void {
     Category::factory()->ingreso()->create(['name' => 'Renta']);
 
     $response = $this->fromRoute('dashboard')
@@ -54,6 +64,7 @@ it('requires a positive integer amount', function (string|int $amount): void {
     'zero' => 0,
     'negative' => -50,
     'non-numeric' => 'lots',
+    'too many decimals' => '10.999',
 ]);
 
 it('validates the remaining required fields', function (string $field): void {
