@@ -107,6 +107,7 @@
         /* Completeness */
         // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+        "ignoreDeprecations": "6.0" /* baseUrl is deprecated in TS 7; defer the migration (Inertia SSR page resolution still relies on it). */,
         "baseUrl": ".",
         "paths": {
             "@/*": ["./resources/js/*"]

@@ -82,7 +82,9 @@ function TransactionForm() {
                 data.concept || (data.type === 'ingreso' ? 'Ingreso' : 'Gasto'),
             amount: Math.abs(Number(data.amount)) || 0,
             method: data.method || 'Transferencia',
-        })).post(CreateTransactionController.url(), {
+        }));
+
+        form.post(CreateTransactionController.url(), {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
