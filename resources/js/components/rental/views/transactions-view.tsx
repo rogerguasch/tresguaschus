@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Sparkline } from '../charts/sparkline';
 import { MONTHS_LONG } from '../data';
 import { Icon } from '../icon';
@@ -7,11 +7,20 @@ import { rentalsById, toTransactionRow } from '../selectors';
 import { Card, SecondaryButton, SelectInput } from '../ui';
 import { formatEuros, shortAddress, sumByType } from '../utils';
 
+const PAGE_SIZE = 20;
+
 export function TransactionsView() {
     const { state, actions } = useRentalContext();
     const { rentals, transactions, categories, filters } = state;
 
     const rentalsMap = useMemo(() => rentalsById(rentals), [rentals]);
+
+    const [page, setPage] = useState(1);
+
+    // Reset to the first page whenever the active filters change.
+    useEffect(() => {
+        setPage(1);
+    }, [filters.rentalId, filters.month, filters.year]);
 
     const data = useMemo(() => {
         let list = transactions.slice();
@@ -80,6 +89,13 @@ export function TransactionsView() {
         filters.rentalId !== 'all' ||
         filters.month !== 'all' ||
         filters.year !== 'all';
+
+    const totalPages = Math.max(1, Math.ceil(data.rows.length / PAGE_SIZE));
+    const currentPage = Math.min(page, totalPages);
+    const pageRows = data.rows.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+    );
 
     return (
         <div className="mx-auto max-w-[1200px]">
@@ -222,7 +238,7 @@ export function TransactionsView() {
                         No hay transacciones con estos filtros.
                     </div>
                 ) : (
-                    data.rows.map((t) => (
+                    pageRows.map((t) => (
                         <div
                             key={t.id}
                             className="grid grid-cols-[120px_1fr_200px_150px_110px_44px] items-center gap-3 border-b border-zinc-100 px-[18px] py-3.5 text-[13px] last:border-b-0"
@@ -258,6 +274,32 @@ export function TransactionsView() {
                     ))
                 )}
             </Card>
+
+            {data.rows.length > PAGE_SIZE && (
+                <div className="mt-4 flex items-center justify-between">
+                    <span className="text-[13px] text-zinc-500">
+                        Página {currentPage} de {totalPages}
+                    </span>
+                    <div className="flex gap-2">
+                        <SecondaryButton
+                            onClick={() => setPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="h-9 px-3 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                            <Icon name="chevron-left" width={15} height={15} />
+                            Anterior
+                        </SecondaryButton>
+                        <SecondaryButton
+                            onClick={() => setPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="h-9 px-3 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                            Siguiente
+                            <Icon name="chevron-right" width={15} height={15} />
+                        </SecondaryButton>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
