@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Money\Money;
@@ -25,7 +26,7 @@ final class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            'rental_id' => 'r'.fake()->numberBetween(1, 6),
+            'rental_id' => Rental::factory(),
             'category_id' => Category::factory(),
             'date' => fake()->dateTimeBetween('-1 year')->format('Y-m-d'),
             'concept' => fake()->sentence(3),

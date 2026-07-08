@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Models\Transaction;
 use Money\Money;
 
 it('surfaces a server validation error on the field', function (): void {
+    Rental::factory()->create();
     Category::factory()->ingreso()->create(['name' => 'Renta']);
 
     $page = visit(route('dashboard'));
@@ -23,6 +25,7 @@ it('surfaces a server validation error on the field', function (): void {
 });
 
 it('creates a transaction from the modal', function (): void {
+    Rental::factory()->create();
     Category::factory()->ingreso()->create(['name' => 'Renta']);
 
     $page = visit(route('dashboard'));

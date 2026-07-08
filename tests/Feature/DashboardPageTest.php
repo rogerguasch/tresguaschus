@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Models\Transaction;
 use Money\Money;
 
@@ -30,10 +31,10 @@ it('passes categories from the backend to the dashboard', function (): void {
 });
 
 it('passes transactions from the backend to the dashboard', function (): void {
+    $rental = Rental::factory()->create();
     $category = Category::factory()->ingreso()->create(['name' => 'Renta']);
 
-    $transaction = Transaction::factory()->for($category)->create([
-        'rental_id' => 'r1',
+    $transaction = Transaction::factory()->for($rental)->for($category)->create([
         'date' => '2026-01-05',
         'concept' => 'Renta mensual',
         'amount' => Money::EUR(120_000),
@@ -46,11 +47,39 @@ it('passes transactions from the backend to the dashboard', function (): void {
             ->component('dashboard')
             ->has('transactions', 1)
             ->where('transactions.0.id', (string) $transaction->id)
-            ->where('transactions.0.rentalId', 'r1')
+            ->where('transactions.0.rentalId', (string) $rental->id)
             ->where('transactions.0.date', '2026-01-05')
             ->where('transactions.0.type', 'ingreso')
             ->where('transactions.0.category', 'Renta')
             ->where('transactions.0.concept', 'Renta mensual')
             ->where('transactions.0.amount', 1200)
             ->where('transactions.0.method', 'Transferencia'));
+});
+
+it('passes rentals with their tenant from the backend to the dashboard', function (): void {
+    $rental = Rental::factory()->create([
+        'address' => 'Gran Vía 42, 3ºB',
+        'city' => 'Madrid',
+    ]);
+    $rental->tenant()->create([
+        'name' => 'Laura Giménez',
+        'email' => 'laura@email.com',
+        'phone' => '+34 612 345 678',
+        'since' => '2024-09-01',
+    ]);
+
+    Rental::factory()->vacant()->create();
+
+    $this->get(route('dashboard'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('dashboard')
+            ->has('rentals', 2)
+            ->where('rentals.0.id', (string) $rental->id)
+            ->where('rentals.0.address', 'Gran Vía 42, 3ºB')
+            ->where('rentals.0.city', 'Madrid')
+            ->where('rentals.0.tenant.name', 'Laura Giménez')
+            ->where('rentals.0.tenant.since', '2024-09-01')
+            ->where('rentals.1.tenant', null)
+            ->where('rentals.1.status', 'Vacío'));
 });

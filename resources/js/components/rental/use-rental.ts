@@ -1,7 +1,7 @@
 import DeleteCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/DeleteCategoryController';
 import { router } from '@inertiajs/react';
 import { useEffect, useMemo, useReducer } from 'react';
-import { CHAT_REPLIES, INITIAL_FILES, INITIAL_RENTALS } from './data';
+import { CHAT_REPLIES, INITIAL_FILES } from './data';
 import type {
     Category,
     ChatMessage,
@@ -9,7 +9,6 @@ import type {
     DetailFilters,
     Rental,
     RentalFile,
-    RentalForm,
     RentalView,
     Toast,
     Transaction,
@@ -36,7 +35,6 @@ interface RentalState {
     catModal: { open: boolean; editingId: string | null };
     txModal: { open: boolean; rentalId: string | null };
     txDetailId: string | null;
-    form: RentalForm;
     toast: Toast | null;
     toastSeq: number;
 }
@@ -60,44 +58,30 @@ type Action =
     | { type: 'OPEN_CAT_NEW' }
     | { type: 'OPEN_CAT_EDIT'; id: string }
     | { type: 'CLOSE_CAT_MODAL' }
+    | { type: 'SET_RENTALS'; rentals: Rental[] }
     | { type: 'SET_CATEGORIES'; categories: Category[] }
     | { type: 'SET_TRANSACTIONS'; transactions: Transaction[] }
     | { type: 'SHOW_TOAST'; message: string; ok: boolean }
-    | { type: 'SET_FORM_FIELD'; field: keyof RentalForm; value: string }
-    | { type: 'SUBMIT_RENTAL' }
     | { type: 'UPLOAD_FILES'; files: Array<{ name: string; size: number }> }
     | { type: 'SET_CHAT_INPUT'; value: string }
     | { type: 'SEND_CHAT'; text: string }
     | { type: 'DISMISS_TOAST' };
 
-function emptyForm(): RentalForm {
-    return {
-        address: '',
-        city: '',
-        type: 'Piso',
-        rent: '',
-        deposit: '',
-        tenantName: '',
-        tenantEmail: '',
-        tenantPhone: '',
-        contractStart: '',
-        contractEnd: '',
-    };
-}
-
 interface RentalInit {
+    rentals: Rental[];
     categories: Category[];
     transactions: Transaction[];
 }
 
 function createInitialState({
+    rentals,
     categories,
     transactions,
 }: RentalInit): RentalState {
     return {
         view: 'dashboard',
         selectedId: null,
-        rentals: INITIAL_RENTALS,
+        rentals,
         transactions,
         files: INITIAL_FILES,
         categories,
@@ -118,7 +102,6 @@ function createInitialState({
         catModal: { open: false, editingId: null },
         txModal: { open: false, rentalId: null },
         txDetailId: null,
-        form: emptyForm(),
         toast: null,
         toastSeq: 0,
     };
@@ -132,11 +115,7 @@ function withToast(state: RentalState, msg: string, ok: boolean): RentalState {
 function reducer(state: RentalState, action: Action): RentalState {
     switch (action.type) {
         case 'NAVIGATE':
-            return {
-                ...state,
-                view: action.view,
-                form: action.view === 'newRental' ? emptyForm() : state.form,
-            };
+            return { ...state, view: action.view };
 
         case 'TOGGLE_RENTALS_NAV': {
             const onRentalsSection =
@@ -244,6 +223,9 @@ function reducer(state: RentalState, action: Action): RentalState {
         case 'CLOSE_CAT_MODAL':
             return { ...state, catModal: { open: false, editingId: null } };
 
+        case 'SET_RENTALS':
+            return { ...state, rentals: action.rentals };
+
         case 'SET_CATEGORIES':
             return { ...state, categories: action.categories };
 
@@ -252,57 +234,6 @@ function reducer(state: RentalState, action: Action): RentalState {
 
         case 'SHOW_TOAST':
             return withToast(state, action.message, action.ok);
-
-        case 'SET_FORM_FIELD':
-            return {
-                ...state,
-                form: { ...state.form, [action.field]: action.value },
-            };
-
-        case 'SUBMIT_RENTAL': {
-            const form = state.form;
-            if (!form.address || !form.city || !form.rent) {
-                return withToast(
-                    state,
-                    'Completa dirección, ciudad y renta',
-                    false,
-                );
-            }
-            const id = `r${Date.now()}`;
-            const hasTenant = Boolean(form.tenantName);
-            const rental: Rental = {
-                id,
-                address: form.address,
-                city: form.city,
-                type: form.type,
-                rent: Number(form.rent) || 0,
-                deposit: Number(form.deposit) || 0,
-                contractStart: form.contractStart || null,
-                contractEnd: form.contractEnd || null,
-                status: hasTenant ? 'Alquilado' : 'Vacío',
-                tenant: hasTenant
-                    ? {
-                          name: form.tenantName,
-                          email: form.tenantEmail || '—',
-                          phone: form.tenantPhone || '—',
-                          since: form.contractStart || todayIso(),
-                      }
-                    : null,
-            };
-            return withToast(
-                {
-                    ...state,
-                    rentals: [...state.rentals, rental],
-                    files: { ...state.files, [id]: [] },
-                    view: 'detail',
-                    selectedId: id,
-                    detailFilters: { from: '', to: '', category: 'all' },
-                    form: emptyForm(),
-                },
-                'Alquiler dado de alta',
-                true,
-            );
-        }
 
         case 'UPLOAD_FILES': {
             const id = state.selectedId;
@@ -379,8 +310,6 @@ export interface RentalActions {
     closeCatModal: () => void;
     deleteCat: (id: string) => void;
     showToast: (message: string, ok: boolean) => void;
-    setFormField: (field: keyof RentalForm, value: string) => void;
-    submitRental: () => void;
     uploadFiles: (files: Array<{ name: string; size: number }>) => void;
     setChatInput: (value: string) => void;
     sendChat: (text: string) => void;
@@ -392,12 +321,13 @@ export interface RentalStore {
 }
 
 export function useRental(
+    rentals: Rental[],
     categories: Category[],
     transactions: Transaction[],
 ): RentalStore {
     const [state, dispatch] = useReducer(
         reducer,
-        { categories, transactions },
+        { rentals, categories, transactions },
         createInitialState,
     );
 
@@ -411,6 +341,10 @@ export function useRental(
         );
         return () => window.clearTimeout(timer);
     }, [state.toast]);
+
+    useEffect(() => {
+        dispatch({ type: 'SET_RENTALS', rentals });
+    }, [rentals]);
 
     useEffect(() => {
         dispatch({ type: 'SET_CATEGORIES', categories });
@@ -466,9 +400,6 @@ export function useRental(
             },
             showToast: (message, ok) =>
                 dispatch({ type: 'SHOW_TOAST', message, ok }),
-            setFormField: (field, value) =>
-                dispatch({ type: 'SET_FORM_FIELD', field, value }),
-            submitRental: () => dispatch({ type: 'SUBMIT_RENTAL' }),
             uploadFiles: (files) => dispatch({ type: 'UPLOAD_FILES', files }),
             setChatInput: (value) =>
                 dispatch({ type: 'SET_CHAT_INPUT', value }),

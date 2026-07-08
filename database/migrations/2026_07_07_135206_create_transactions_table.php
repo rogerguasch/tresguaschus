@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table): void {
             $table->id();
-            $table->string('rental_id');
+            $table->foreignId('rental_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->date('date');
             $table->string('concept');

@@ -5,7 +5,7 @@ import { TransactionDetailModal } from './modals/transaction-detail-modal';
 import { RentalProvider } from './rental-context';
 import { Sidebar } from './sidebar';
 import { Toast } from './toast';
-import type { Category, RentalView, Transaction } from './types';
+import type { Category, Rental, RentalView, Transaction } from './types';
 import { useRental } from './use-rental';
 import { ChatView } from './views/chat-view';
 import { DashboardView } from './views/dashboard-view';
@@ -31,13 +31,15 @@ function CurrentView({ view }: { view: RentalView }) {
 }
 
 export function RentalApp({
+    rentals,
     categories,
     transactions,
 }: {
+    rentals: Rental[];
     categories: Category[];
     transactions: Transaction[];
 }) {
-    const store = useRental(categories, transactions);
+    const store = useRental(rentals, categories, transactions);
 
     return (
         <RentalProvider value={store}>

@@ -9,7 +9,7 @@ use Money\Money;
 final readonly class TransactionData
 {
     public function __construct(
-        public string $rentalId,
+        public int $rentalId,
         public string $categoryName,
         public string $date,
         public string $concept,

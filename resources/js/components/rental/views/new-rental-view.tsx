@@ -1,6 +1,10 @@
+import CreateRentalController from '@/actions/App/Rental/Infrastructure/Http/Controllers/CreateRentalController';
+import { useForm } from '@inertiajs/react';
+import type { FormEvent } from 'react';
 import { PROPERTY_TYPES } from '../data';
 import { Icon } from '../icon';
 import { useRentalContext } from '../rental-context';
+import type { PropertyType } from '../types';
 import {
     Card,
     Field,
@@ -11,11 +15,36 @@ import {
 } from '../ui';
 
 export function NewRentalView() {
-    const { state, actions } = useRentalContext();
-    const { form } = state;
+    const { actions } = useRentalContext();
+
+    const form = useForm({
+        address: '',
+        city: '',
+        type: 'Piso' as PropertyType,
+        rent: '',
+        deposit: '',
+        tenant_name: '',
+        tenant_email: '',
+        tenant_phone: '',
+        contract_start: '',
+        contract_end: '',
+    });
+
+    const submit = (event: FormEvent): void => {
+        event.preventDefault();
+
+        form.post(CreateRentalController.url(), {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => {
+                actions.navigate('rentals');
+                actions.showToast('Alquiler dado de alta', true);
+            },
+        });
+    };
 
     return (
-        <div className="mx-auto max-w-[720px]">
+        <form onSubmit={submit} className="mx-auto max-w-[720px]">
             <Card className="p-7">
                 <h3 className="mb-1 flex items-center gap-2 text-[15px] font-semibold">
                     <Icon name="home" width={17} height={17} />
@@ -25,30 +54,36 @@ export function NewRentalView() {
                     Información básica de la propiedad
                 </p>
                 <div className="grid grid-cols-1 gap-4">
-                    <Field label="Dirección">
+                    <Field label="Dirección" error={form.errors.address}>
                         <TextInput
-                            value={form.address}
+                            value={form.data.address}
                             onChange={(e) =>
-                                actions.setFormField('address', e.target.value)
+                                form.setData('address', e.target.value)
                             }
                             placeholder="Calle, número, piso"
                         />
                     </Field>
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Ciudad">
+                        <Field label="Ciudad" error={form.errors.city}>
                             <TextInput
-                                value={form.city}
+                                value={form.data.city}
                                 onChange={(e) =>
-                                    actions.setFormField('city', e.target.value)
+                                    form.setData('city', e.target.value)
                                 }
                                 placeholder="Madrid"
                             />
                         </Field>
-                        <Field label="Tipo de inmueble">
+                        <Field
+                            label="Tipo de inmueble"
+                            error={form.errors.type}
+                        >
                             <SelectInput
-                                value={form.type}
+                                value={form.data.type}
                                 onChange={(e) =>
-                                    actions.setFormField('type', e.target.value)
+                                    form.setData(
+                                        'type',
+                                        e.target.value as PropertyType,
+                                    )
                                 }
                             >
                                 {PROPERTY_TYPES.map((type) => (
@@ -60,25 +95,25 @@ export function NewRentalView() {
                         </Field>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Renta mensual (€)">
+                        <Field
+                            label="Renta mensual (€)"
+                            error={form.errors.rent}
+                        >
                             <TextInput
                                 type="number"
-                                value={form.rent}
+                                value={form.data.rent}
                                 onChange={(e) =>
-                                    actions.setFormField('rent', e.target.value)
+                                    form.setData('rent', e.target.value)
                                 }
                                 placeholder="1200"
                             />
                         </Field>
-                        <Field label="Fianza (€)">
+                        <Field label="Fianza (€)" error={form.errors.deposit}>
                             <TextInput
                                 type="number"
-                                value={form.deposit}
+                                value={form.data.deposit}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'deposit',
-                                        e.target.value,
-                                    )
+                                    form.setData('deposit', e.target.value)
                                 }
                                 placeholder="2400"
                             />
@@ -97,65 +132,65 @@ export function NewRentalView() {
                 </p>
                 <div className="grid grid-cols-1 gap-4">
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Nombre del inquilino">
+                        <Field
+                            label="Nombre del inquilino"
+                            error={form.errors.tenant_name}
+                        >
                             <TextInput
-                                value={form.tenantName}
+                                value={form.data.tenant_name}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'tenantName',
-                                        e.target.value,
-                                    )
+                                    form.setData('tenant_name', e.target.value)
                                 }
                                 placeholder="Nombre y apellidos"
                             />
                         </Field>
-                        <Field label="Email">
+                        <Field label="Email" error={form.errors.tenant_email}>
                             <TextInput
-                                value={form.tenantEmail}
+                                value={form.data.tenant_email}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'tenantEmail',
-                                        e.target.value,
-                                    )
+                                    form.setData('tenant_email', e.target.value)
                                 }
                                 placeholder="correo@email.com"
                             />
                         </Field>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
-                        <Field label="Teléfono">
+                        <Field
+                            label="Teléfono"
+                            error={form.errors.tenant_phone}
+                        >
                             <TextInput
-                                value={form.tenantPhone}
+                                value={form.data.tenant_phone}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'tenantPhone',
-                                        e.target.value,
-                                    )
+                                    form.setData('tenant_phone', e.target.value)
                                 }
                                 placeholder="+34 600 000 000"
                             />
                         </Field>
-                        <Field label="Inicio contrato">
+                        <Field
+                            label="Inicio contrato"
+                            error={form.errors.contract_start}
+                        >
                             <TextInput
                                 type="date"
-                                value={form.contractStart}
+                                value={form.data.contract_start}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'contractStart',
+                                    form.setData(
+                                        'contract_start',
                                         e.target.value,
                                     )
                                 }
                             />
                         </Field>
-                        <Field label="Fin contrato">
+                        <Field
+                            label="Fin contrato"
+                            error={form.errors.contract_end}
+                        >
                             <TextInput
                                 type="date"
-                                value={form.contractEnd}
+                                value={form.data.contract_end}
                                 onChange={(e) =>
-                                    actions.setFormField(
-                                        'contractEnd',
-                                        e.target.value,
-                                    )
+                                    form.setData('contract_end', e.target.value)
                                 }
                             />
                         </Field>
@@ -164,16 +199,17 @@ export function NewRentalView() {
 
                 <div className="mt-7 flex justify-end gap-2.5">
                     <SecondaryButton
+                        type="button"
                         onClick={() => actions.navigate('rentals')}
                     >
                         Cancelar
                     </SecondaryButton>
-                    <PrimaryButton onClick={actions.submitRental}>
+                    <PrimaryButton type="submit" disabled={form.processing}>
                         <Icon name="check" width={16} height={16} />
-                        Dar de alta
+                        {form.processing ? 'Guardando…' : 'Dar de alta'}
                     </PrimaryButton>
                 </div>
             </Card>
-        </div>
+        </form>
     );
 }

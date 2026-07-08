@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Infrastructure\Http\Requests;
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Application\DTOs\TransactionData;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -21,7 +22,7 @@ final class StoreTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rental_id' => ['required', 'string', 'max:255'],
+            'rental_id' => ['required', 'integer', Rule::exists(Rental::class, 'id')],
             'category' => ['required', 'string', Rule::exists(Category::class, 'name')->withoutTrashed()],
             'date' => ['required', 'date'],
             'concept' => ['required', 'string', 'max:255'],
@@ -33,7 +34,7 @@ final class StoreTransactionRequest extends FormRequest
     public function toData(): TransactionData
     {
         return new TransactionData(
-            $this->string('rental_id')->value(),
+            $this->integer('rental_id'),
             $this->string('category')->value(),
             $this->string('date')->value(),
             $this->string('concept')->value(),

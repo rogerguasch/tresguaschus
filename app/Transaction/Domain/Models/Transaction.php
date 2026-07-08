@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Domain\Models;
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Casts\MoneyCast;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
@@ -17,12 +18,13 @@ use Money\Money;
 
 /**
  * @property-read int $id
- * @property-read string $rental_id
+ * @property-read int $rental_id
  * @property-read int $category_id
  * @property-read CarbonImmutable $date
  * @property-read string $concept
  * @property-read Money $amount
  * @property-read string $method
+ * @property-read Rental $rental
  * @property-read Category $category
  * @property-read CarbonInterface $created_at
  * @property-read CarbonInterface $updated_at
@@ -49,13 +51,21 @@ final class Transaction extends Model
     }
 
     /**
+     * @return BelongsTo<Rental, $this>
+     */
+    public function rental(): BelongsTo
+    {
+        return $this->belongsTo(Rental::class);
+    }
+
+    /**
      * @return array<string, string>
      */
     public function casts(): array
     {
         return [
             'id' => 'integer',
-            'rental_id' => 'string',
+            'rental_id' => 'integer',
             'category_id' => 'integer',
             'date' => 'date',
             'concept' => 'string',

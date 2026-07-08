@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Category\Domain\Models\Category;
+use App\Rental\Domain\Models\Rental;
 use App\Transaction\Domain\Models\Transaction;
 use Illuminate\Database\Seeder;
 use Money\Money;
@@ -16,10 +17,16 @@ final class TransactionSeeder extends Seeder
         /** @var array<string, int> $categoryIds */
         $categoryIds = Category::query()->pluck('id', 'name')->all();
 
+        // Demo rentals were seeded in order, so index 0 = "r1", 1 = "r2", ...
+        /** @var list<int> $rentalIds */
+        $rentalIds = Rental::query()->orderBy('id')->pluck('id')->all();
+
         foreach ($this->transactions() as $transaction) {
+            $rentalId = $rentalIds[(int) mb_substr($transaction['rental_id'], 1) - 1];
+
             Transaction::query()->updateOrCreate(
                 [
-                    'rental_id' => $transaction['rental_id'],
+                    'rental_id' => $rentalId,
                     'date' => $transaction['date'],
                     'concept' => $transaction['concept'],
                 ],

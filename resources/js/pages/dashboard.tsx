@@ -1,13 +1,15 @@
 import { RentalApp } from '@/components/rental/rental-app';
-import type { Category, Transaction } from '@/components/rental/types';
+import type { Category, Rental, Transaction } from '@/components/rental/types';
 import { Head } from '@inertiajs/react';
 
 interface DashboardPageProps {
+    rentals: Rental[];
     categories: Category[];
     transactions: Transaction[];
 }
 
 export default function Dashboard({
+    rentals,
     categories,
     transactions,
 }: DashboardPageProps) {
@@ -25,7 +27,11 @@ export default function Dashboard({
                     rel="stylesheet"
                 />
             </Head>
-            <RentalApp categories={categories} transactions={transactions} />
+            <RentalApp
+                rentals={rentals}
+                categories={categories}
+                transactions={transactions}
+            />
         </>
     );
 }

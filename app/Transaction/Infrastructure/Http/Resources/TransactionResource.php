@@ -22,7 +22,7 @@ final class TransactionResource extends JsonResource
     {
         return [
             'id' => (string) $this->id,
-            'rentalId' => $this->rental_id,
+            'rentalId' => (string) $this->rental_id,
             'date' => $this->date->format('Y-m-d'),
             'type' => $this->category->type->value,
             'category' => $this->category->name,

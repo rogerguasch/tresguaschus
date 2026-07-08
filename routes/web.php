@@ -7,6 +7,9 @@ use App\Category\Infrastructure\Http\Controllers\CreateCategoryController;
 use App\Category\Infrastructure\Http\Controllers\DeleteCategoryController;
 use App\Category\Infrastructure\Http\Controllers\UpdateCategoryController;
 use App\Category\Infrastructure\Http\Resources\CategoryResource;
+use App\Rental\Domain\Models\Rental;
+use App\Rental\Infrastructure\Http\Controllers\CreateRentalController;
+use App\Rental\Infrastructure\Http\Resources\RentalResource;
 use App\Transaction\Domain\Models\Transaction;
 use App\Transaction\Infrastructure\Http\Controllers\CreateTransactionController;
 use App\Transaction\Infrastructure\Http\Resources\TransactionResource;
@@ -25,6 +28,9 @@ Route::get('/', fn () => Inertia::render('welcome'))->name('home');
 
 // Rental dashboard (entry point).
 Route::get('dashboard', fn () => Inertia::render('dashboard', [
+    'rentals' => RentalResource::collection(
+        Rental::query()->with('tenant')->orderBy('id')->get()
+    ),
     'categories' => CategoryResource::collection(Category::query()->orderBy('id')->get()),
     'transactions' => TransactionResource::collection(
         Transaction::query()
@@ -34,6 +40,9 @@ Route::get('dashboard', fn () => Inertia::render('dashboard', [
             ->get()
     ),
 ]))->name('dashboard');
+
+// Rentals... (TODO: move behind auth once the dashboard requires authentication)
+Route::post('rentals', CreateRentalController::class)->name('rentals.store');
 
 // Categories... (TODO: move behind auth once the dashboard requires authentication)
 Route::post('categories', CreateCategoryController::class)->name('categories.store');
