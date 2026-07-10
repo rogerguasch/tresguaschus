@@ -6,6 +6,14 @@
         "/Users/nunomaduro/Work/projects/nunomaduro/laravel-starter-kit-inertia-react/artisan",
         "boost:mcp"
       ]
+    },
+    "nightwatch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://nightwatch.laravel.com/mcp"
+      ]
     }
   }
 }
