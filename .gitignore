@@ -1,29 +1,49 @@
-/.phpunit.cache
-/bootstrap/ssr
+# Dependencies
 /node_modules
+/vendor
+
+# Build output & compiled assets
+/bootstrap/ssr
 /public/build
 /public/hot
 /public/storage
+
+# Wayfinder generated files
 /resources/js/actions
 /resources/js/routes
 /resources/js/wayfinder
+
+# Storage & caches
+/.phpunit.cache
+/.phpactor.json
+/.phpunit.result.cache
 /storage/*.key
 /storage/pail
-/vendor
-.DS_Store
+/tmp/
+
+# Environment
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
+/auth.json
+
+# Homestead
 Homestead.json
 Homestead.yaml
+
+# Logs
 npm-debug.log
 yarn-error.log
-/auth.json
+
+# Claude Code (local overrides only; shared skills stay tracked)
+.claude/settings.local.json
+
+# Editors & IDEs
 /.fleet
 /.idea
 /.nova
 /.vscode
 /.zed
-/tmp/
+
+# OS
+.DS_Store
