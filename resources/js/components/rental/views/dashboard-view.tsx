@@ -234,7 +234,7 @@ export function DashboardView() {
                 </span>
             </div>
 
-            <div className="mb-4 grid grid-cols-3 gap-4">
+            <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 {data.kpis.map((kpi) => (
                     <Card
                         key={kpi.label}
@@ -271,7 +271,7 @@ export function DashboardView() {
                 ))}
             </div>
 
-            <div className="mb-4 grid grid-cols-[1.5fr_1fr] gap-4">
+            <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
                 <Card className="p-5">
                     <div className="mb-2 flex items-start justify-between">
                         <div>
@@ -331,7 +331,7 @@ export function DashboardView() {
                 </Card>
             </div>
 
-            <div className="grid grid-cols-[1.5fr_1fr] gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr]">
                 <Card className="p-5">
                     <h3 className="text-[15px] font-semibold">
                         Beneficio neto

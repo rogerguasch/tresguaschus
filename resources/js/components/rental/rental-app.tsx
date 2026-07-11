@@ -49,10 +49,17 @@ export function RentalApp({
                     fontFamily: "'Inter', -apple-system, system-ui, sans-serif",
                 }}
             >
+                {store.state.sidebarOpen && (
+                    <button
+                        aria-label="Cerrar menú"
+                        onClick={store.actions.closeSidebar}
+                        className="fixed inset-0 z-40 bg-zinc-950/40 lg:hidden"
+                    />
+                )}
                 <Sidebar />
                 <main className="flex min-w-0 flex-1 flex-col bg-zinc-50">
                     <Header />
-                    <div className="flex-1 overflow-y-auto p-7">
+                    <div className="flex-1 overflow-y-auto p-4 sm:p-7">
                         <CurrentView view={store.state.view} />
                     </div>
                 </main>

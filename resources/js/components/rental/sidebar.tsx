@@ -60,7 +60,14 @@ export function Sidebar() {
         view === 'rentals' || view === 'detail' || view === 'newRental';
 
     return (
-        <aside className="flex w-[252px] shrink-0 flex-col border-r border-zinc-200 bg-zinc-50">
+        <aside
+            className={cn(
+                'fixed inset-y-0 left-0 z-50 flex w-[252px] shrink-0 flex-col border-r border-zinc-200 bg-zinc-50 transition-transform duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:transition-none',
+                state.sidebarOpen
+                    ? 'translate-x-0 shadow-2xl'
+                    : '-translate-x-full',
+            )}
+        >
             <div className="flex h-[60px] shrink-0 items-center gap-2.5 border-b border-zinc-200 px-5">
                 <div className="flex size-[30px] shrink-0 items-center justify-center rounded-lg bg-zinc-900">
                     <Icon
@@ -73,6 +80,13 @@ export function Sidebar() {
                 <span className="text-base font-bold tracking-tight">
                     Tresguaschus
                 </span>
+                <button
+                    onClick={actions.closeSidebar}
+                    title="Cerrar menú"
+                    className="ml-auto flex size-[34px] shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white transition hover:bg-zinc-100 lg:hidden"
+                >
+                    <Icon name="x" width={17} height={17} />
+                </button>
             </div>
 
             <nav className="flex-1 overflow-y-auto p-3">

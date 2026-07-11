@@ -155,7 +155,7 @@ export function RentalDetailView() {
 
     return (
         <div className="mx-auto max-w-[1100px]">
-            <div className="mb-6 grid grid-cols-4 gap-3">
+            <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <Card className="p-4">
                     <div className="mb-1.5 text-xs text-zinc-500">
                         Renta mensual
@@ -196,7 +196,7 @@ export function RentalDetailView() {
                 </Card>
             </div>
 
-            <div className="mb-4 grid grid-cols-2 items-stretch gap-4">
+            <div className="mb-4 grid grid-cols-1 items-stretch gap-4 md:grid-cols-2">
                 <Card className="overflow-hidden p-0">
                     <div className="flex items-center gap-[9px] border-b border-zinc-100 px-5 py-4">
                         <Icon
@@ -420,52 +420,66 @@ export function RentalDetailView() {
                         {data.rows.length}
                     </span>
                 </div>
-                <div className="grid grid-cols-[120px_1fr_150px_130px_110px_44px] gap-3 border-b border-zinc-200 bg-zinc-50 px-[18px] py-3 text-[11px] font-semibold tracking-[0.05em] text-zinc-500 uppercase">
-                    <span>Fecha</span>
-                    <span>Concepto</span>
-                    <span>Categoría</span>
-                    <span>Método</span>
-                    <span className="text-right">Importe</span>
-                    <span />
-                </div>
-                {data.rows.length === 0 ? (
-                    <div className="px-5 py-12 text-center text-sm text-zinc-500">
-                        Aún no hay transacciones para este alquiler.
-                    </div>
-                ) : (
-                    data.rows.map((t) => (
-                        <div
-                            key={t.id}
-                            className="grid grid-cols-[120px_1fr_150px_130px_110px_44px] items-center gap-3 border-b border-zinc-100 px-[18px] py-3.5 text-[13px] last:border-b-0"
-                        >
-                            <span className="text-zinc-500">{t.dateFmt}</span>
-                            <span className="truncate font-medium">
-                                {t.concept}
-                            </span>
-                            <span className="inline-flex items-center gap-[7px] text-zinc-600">
-                                <span
-                                    className="size-2 shrink-0 rounded-[2px]"
-                                    style={{ background: t.catColor }}
-                                />
-                                {t.category}
-                            </span>
-                            <span className="text-zinc-500">{t.method}</span>
-                            <span
-                                className="text-right font-semibold tabular-nums"
-                                style={{ color: t.amountColor }}
-                            >
-                                {t.amountFmt}
-                            </span>
-                            <button
-                                onClick={() => actions.openTxDetail(t.id)}
-                                title="Ver detalle"
-                                className="flex size-7 cursor-pointer items-center justify-center justify-self-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
-                            >
-                                <Icon name="eye" width={16} height={16} />
-                            </button>
+                <div className="overflow-x-auto">
+                    <div className="min-w-[620px]">
+                        <div className="grid grid-cols-[120px_1fr_150px_130px_110px_44px] gap-3 border-b border-zinc-200 bg-zinc-50 px-[18px] py-3 text-[11px] font-semibold tracking-[0.05em] text-zinc-500 uppercase">
+                            <span>Fecha</span>
+                            <span>Concepto</span>
+                            <span>Categoría</span>
+                            <span>Método</span>
+                            <span className="text-right">Importe</span>
+                            <span />
                         </div>
-                    ))
-                )}
+                        {data.rows.length === 0 ? (
+                            <div className="px-5 py-12 text-center text-sm text-zinc-500">
+                                Aún no hay transacciones para este alquiler.
+                            </div>
+                        ) : (
+                            data.rows.map((t) => (
+                                <div
+                                    key={t.id}
+                                    className="grid grid-cols-[120px_1fr_150px_130px_110px_44px] items-center gap-3 border-b border-zinc-100 px-[18px] py-3.5 text-[13px] last:border-b-0"
+                                >
+                                    <span className="text-zinc-500">
+                                        {t.dateFmt}
+                                    </span>
+                                    <span className="truncate font-medium">
+                                        {t.concept}
+                                    </span>
+                                    <span className="inline-flex items-center gap-[7px] text-zinc-600">
+                                        <span
+                                            className="size-2 shrink-0 rounded-[2px]"
+                                            style={{ background: t.catColor }}
+                                        />
+                                        {t.category}
+                                    </span>
+                                    <span className="text-zinc-500">
+                                        {t.method}
+                                    </span>
+                                    <span
+                                        className="text-right font-semibold tabular-nums"
+                                        style={{ color: t.amountColor }}
+                                    >
+                                        {t.amountFmt}
+                                    </span>
+                                    <button
+                                        onClick={() =>
+                                            actions.openTxDetail(t.id)
+                                        }
+                                        title="Ver detalle"
+                                        className="flex size-7 cursor-pointer items-center justify-center justify-self-center rounded-md text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-900"
+                                    >
+                                        <Icon
+                                            name="eye"
+                                            width={16}
+                                            height={16}
+                                        />
+                                    </button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
             </Card>
         </div>
     );

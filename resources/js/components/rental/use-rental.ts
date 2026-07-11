@@ -26,6 +26,7 @@ interface RentalState {
     filters: TransactionsFilters;
     rentalsExpanded: boolean;
     settingsExpanded: boolean;
+    sidebarOpen: boolean;
     chatMessages: ChatMessage[];
     chatInput: string;
     chatPending: boolean;
@@ -40,6 +41,8 @@ type Action =
     | { type: 'NAVIGATE'; view: RentalView }
     | { type: 'TOGGLE_RENTALS_NAV' }
     | { type: 'TOGGLE_SETTINGS_NAV' }
+    | { type: 'OPEN_SIDEBAR' }
+    | { type: 'CLOSE_SIDEBAR' }
     | { type: 'OPEN_RENTAL'; id: string }
     | { type: 'SET_RENTAL_SEARCH'; value: string }
     | { type: 'SET_DASH_FILTER'; key: keyof DashboardFilters; value: string }
@@ -88,6 +91,7 @@ function createInitialState({
         filters: { rentalId: 'all', month: 'all', year: 'all' },
         rentalsExpanded: true,
         settingsExpanded: false,
+        sidebarOpen: false,
         chatMessages: [
             {
                 role: 'assistant',
@@ -118,7 +122,13 @@ function withToast(state: RentalState, msg: string, ok: boolean): RentalState {
 function reducer(state: RentalState, action: Action): RentalState {
     switch (action.type) {
         case 'NAVIGATE':
-            return { ...state, view: action.view };
+            return { ...state, view: action.view, sidebarOpen: false };
+
+        case 'OPEN_SIDEBAR':
+            return { ...state, sidebarOpen: true };
+
+        case 'CLOSE_SIDEBAR':
+            return { ...state, sidebarOpen: false };
 
         case 'TOGGLE_RENTALS_NAV': {
             const onRentalsSection =
@@ -148,6 +158,7 @@ function reducer(state: RentalState, action: Action): RentalState {
                 view: 'detail',
                 selectedId: action.id,
                 detailFilters: { from: '', to: '', category: 'all' },
+                sidebarOpen: false,
             };
 
         case 'SET_RENTAL_SEARCH':
@@ -289,6 +300,8 @@ export interface RentalActions {
     navigate: (view: RentalView) => void;
     toggleRentalsNav: () => void;
     toggleSettingsNav: () => void;
+    openSidebar: () => void;
+    closeSidebar: () => void;
     openRental: (id: string) => void;
     setRentalSearch: (value: string) => void;
     setDashFilter: (key: keyof DashboardFilters, value: string) => void;
@@ -361,6 +374,8 @@ export function useRental(
             navigate: (view) => dispatch({ type: 'NAVIGATE', view }),
             toggleRentalsNav: () => dispatch({ type: 'TOGGLE_RENTALS_NAV' }),
             toggleSettingsNav: () => dispatch({ type: 'TOGGLE_SETTINGS_NAV' }),
+            openSidebar: () => dispatch({ type: 'OPEN_SIDEBAR' }),
+            closeSidebar: () => dispatch({ type: 'CLOSE_SIDEBAR' }),
             openRental: (id) => dispatch({ type: 'OPEN_RENTAL', id }),
             setRentalSearch: (value) =>
                 dispatch({ type: 'SET_RENTAL_SEARCH', value }),

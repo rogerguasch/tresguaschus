@@ -63,7 +63,7 @@ export function NewRentalView() {
                             placeholder="Calle, número, piso"
                         />
                     </Field>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <Field label="Ciudad" error={form.errors.city}>
                             <TextInput
                                 value={form.data.city}
@@ -94,7 +94,7 @@ export function NewRentalView() {
                             </SelectInput>
                         </Field>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <Field
                             label="Renta mensual (€)"
                             error={form.errors.rent}
@@ -131,7 +131,7 @@ export function NewRentalView() {
                     Déjalo en blanco si el inmueble está vacío
                 </p>
                 <div className="grid grid-cols-1 gap-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <Field
                             label="Nombre del inquilino"
                             error={form.errors.tenant_name}
@@ -154,7 +154,7 @@ export function NewRentalView() {
                             />
                         </Field>
                     </div>
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                         <Field
                             label="Teléfono"
                             error={form.errors.tenant_phone}

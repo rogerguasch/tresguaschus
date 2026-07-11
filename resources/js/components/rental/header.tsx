@@ -91,8 +91,15 @@ export function Header() {
     })();
 
     return (
-        <header className="sticky top-0 z-20 flex h-[60px] shrink-0 items-center justify-between gap-4 border-b border-zinc-200 bg-white/85 px-7 backdrop-blur-sm">
-            <div className="flex min-w-0 items-center gap-3">
+        <header className="sticky top-0 z-20 flex h-[60px] shrink-0 items-center justify-between gap-3 border-b border-zinc-200 bg-white/85 px-4 backdrop-blur-sm sm:gap-4 sm:px-7">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                <button
+                    onClick={actions.openSidebar}
+                    title="Abrir menú"
+                    className="flex size-[34px] shrink-0 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white transition hover:bg-zinc-100 lg:hidden"
+                >
+                    <Icon name="menu" width={18} height={18} />
+                </button>
                 {config.showBack && (
                     <button
                         onClick={() => actions.navigate('rentals')}
@@ -113,10 +120,13 @@ export function Header() {
             {config.primary && (
                 <PrimaryButton
                     onClick={config.primary.onClick}
-                    className="h-[38px] shrink-0 px-4 whitespace-nowrap"
+                    title={config.primary.label}
+                    className="h-[38px] shrink-0 px-3 whitespace-nowrap sm:px-4"
                 >
                     <Icon name={config.primary.icon} width={16} height={16} />
-                    {config.primary.label}
+                    <span className="hidden sm:inline">
+                        {config.primary.label}
+                    </span>
                 </PrimaryButton>
             )}
         </header>
