@@ -1,7 +1,7 @@
+import CategoryAssistantChatController from '@/actions/App/Category/Infrastructure/Http/Controllers/CategoryAssistantChatController';
 import DeleteCategoryController from '@/actions/App/Category/Infrastructure/Http/Controllers/DeleteCategoryController';
 import { router } from '@inertiajs/react';
-import { useEffect, useMemo, useReducer } from 'react';
-import { CHAT_REPLIES } from './data';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
 import type {
     Category,
     ChatMessage,
@@ -28,7 +28,7 @@ interface RentalState {
     settingsExpanded: boolean;
     chatMessages: ChatMessage[];
     chatInput: string;
-    chatReplyIndex: number;
+    chatPending: boolean;
     catModal: { open: boolean; editingId: string | null };
     txModal: { open: boolean; rentalId: string | null };
     txDetailId: string | null;
@@ -61,6 +61,8 @@ type Action =
     | { type: 'SHOW_TOAST'; message: string; ok: boolean }
     | { type: 'SET_CHAT_INPUT'; value: string }
     | { type: 'SEND_CHAT'; text: string }
+    | { type: 'RECEIVE_CHAT'; text: string }
+    | { type: 'CHAT_FAILED' }
     | { type: 'DISMISS_TOAST' };
 
 interface RentalInit {
@@ -89,17 +91,23 @@ function createInitialState({
         chatMessages: [
             {
                 role: 'assistant',
-                text: '¡Hola! Soy Guaschnet, tu asistente de alquileres. Puedo ayudarte a resumir ingresos y gastos, localizar transacciones o preparar informes. ¿En qué te ayudo hoy?',
+                text: '¡Hola! Soy Guaschnet, tu asistente de categorías. Puedo crear, listar, modificar o borrar las categorías de ingresos y gastos. ¿Qué necesitas?',
             },
         ],
         chatInput: '',
-        chatReplyIndex: 0,
+        chatPending: false,
         catModal: { open: false, editingId: null },
         txModal: { open: false, rentalId: null },
         txDetailId: null,
         toast: null,
         toastSeq: 0,
     };
+}
+
+/** Read Laravel's XSRF-TOKEN cookie so standalone fetch calls pass CSRF. */
+function readXsrfToken(): string {
+    const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
 }
 
 function withToast(state: RentalState, msg: string, ok: boolean): RentalState {
@@ -238,19 +246,36 @@ function reducer(state: RentalState, action: Action): RentalState {
             if (!text) {
                 return state;
             }
-            const reply =
-                CHAT_REPLIES[state.chatReplyIndex % CHAT_REPLIES.length];
+            return {
+                ...state,
+                chatMessages: [...state.chatMessages, { role: 'user', text }],
+                chatInput: '',
+                chatPending: true,
+            };
+        }
+
+        case 'RECEIVE_CHAT':
             return {
                 ...state,
                 chatMessages: [
                     ...state.chatMessages,
-                    { role: 'user', text },
-                    { role: 'assistant', text: reply },
+                    { role: 'assistant', text: action.text },
                 ],
-                chatInput: '',
-                chatReplyIndex: state.chatReplyIndex + 1,
+                chatPending: false,
             };
-        }
+
+        case 'CHAT_FAILED':
+            return {
+                ...state,
+                chatMessages: [
+                    ...state.chatMessages,
+                    {
+                        role: 'assistant',
+                        text: 'Ups, no he podido procesar tu mensaje. Inténtalo de nuevo en un momento.',
+                    },
+                ],
+                chatPending: false,
+            };
 
         case 'DISMISS_TOAST':
             return { ...state, toast: null };
@@ -300,6 +325,13 @@ export function useRental(
         { rentals, categories, transactions },
         createInitialState,
     );
+
+    // Keep a live reference so action callbacks (memoized once) can read the
+    // latest chat history when calling the assistant.
+    const stateRef = useRef(state);
+    useEffect(() => {
+        stateRef.current = state;
+    });
 
     useEffect(() => {
         if (!state.toast) {
@@ -372,7 +404,48 @@ export function useRental(
                 dispatch({ type: 'SHOW_TOAST', message, ok }),
             setChatInput: (value) =>
                 dispatch({ type: 'SET_CHAT_INPUT', value }),
-            sendChat: (text) => dispatch({ type: 'SEND_CHAT', text }),
+            sendChat: (text) => {
+                const message = text.trim();
+                if (!message || stateRef.current.chatPending) {
+                    return;
+                }
+
+                const history = stateRef.current.chatMessages.map((m) => ({
+                    role: m.role,
+                    text: m.text,
+                }));
+
+                dispatch({ type: 'SEND_CHAT', text: message });
+
+                fetch(CategoryAssistantChatController.url(), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-XSRF-TOKEN': readXsrfToken(),
+                    },
+                    body: JSON.stringify({ message, history }),
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                        return response.json() as Promise<{
+                            reply: string;
+                            categories: Category[];
+                        }>;
+                    })
+                    .then((data) => {
+                        dispatch({ type: 'RECEIVE_CHAT', text: data.reply });
+                        dispatch({
+                            type: 'SET_CATEGORIES',
+                            categories: data.categories,
+                        });
+                    })
+                    .catch(() => dispatch({ type: 'CHAT_FAILED' }));
+            },
         }),
         [],
     );

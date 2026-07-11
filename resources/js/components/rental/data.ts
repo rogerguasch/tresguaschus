@@ -102,13 +102,7 @@ export const CATEGORY_COLOR_CHOICES = [
 ];
 
 export const CHAT_SUGGESTIONS = [
-    'Resumen de ingresos del mes',
-    '¿Qué alquiler es más rentable?',
-    'Gastos por categoría',
-];
-
-export const CHAT_REPLIES = [
-    'Buena pregunta. En esta demo todavía no analizo datos reales, pero en la versión final revisaré tus alquileres y transacciones para darte una respuesta precisa.',
-    'Entendido. Cuando esté conectado a tus datos podré generarte ese resumen al instante.',
-    'Anotado. Esta es una vista de demostración del asistente Guaschnet — pronto podré ayudarte de verdad.',
+    'Lista todas las categorías',
+    'Crea una categoría de gasto llamada Basuras',
+    'Cambia el color de Suministros a azul',
 ];

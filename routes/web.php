@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Category\Domain\Models\Category;
+use App\Category\Infrastructure\Http\Controllers\CategoryAssistantChatController;
 use App\Category\Infrastructure\Http\Controllers\CreateCategoryController;
 use App\Category\Infrastructure\Http\Controllers\DeleteCategoryController;
 use App\Category\Infrastructure\Http\Controllers\UpdateCategoryController;
@@ -55,6 +56,7 @@ Route::middleware('auth')->group(function (): void {
     Route::post('categories', CreateCategoryController::class)->name('categories.store');
     Route::patch('categories/{category}', UpdateCategoryController::class)->name('categories.update');
     Route::delete('categories/{category}', DeleteCategoryController::class)->name('categories.destroy');
+    Route::post('guaschnet/chat', CategoryAssistantChatController::class)->name('guaschnet.chat');
 
     // Transactions...
     Route::post('transactions', CreateTransactionController::class)->name('transactions.store');

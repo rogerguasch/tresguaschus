@@ -5,7 +5,7 @@ import { useRentalContext } from '../rental-context';
 
 export function ChatView() {
     const { state, actions } = useRentalContext();
-    const { chatMessages, chatInput } = state;
+    const { chatMessages, chatInput, chatPending } = state;
     const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -13,7 +13,7 @@ export function ChatView() {
         if (node) {
             node.scrollTop = node.scrollHeight;
         }
-    }, [chatMessages]);
+    }, [chatMessages, chatPending]);
 
     const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -59,6 +59,24 @@ export function ChatView() {
                         </div>
                     );
                 })}
+
+                {chatPending && (
+                    <div className="flex items-end justify-start gap-2.5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-indigo-50">
+                            <Icon
+                                name="sparkles"
+                                width={16}
+                                height={16}
+                                className="text-indigo-600"
+                            />
+                        </span>
+                        <div className="flex gap-1 rounded-2xl rounded-bl-[4px] bg-zinc-100 px-3.5 py-[15px]">
+                            <span className="size-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.3s]" />
+                            <span className="size-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.15s]" />
+                            <span className="size-1.5 animate-bounce rounded-full bg-zinc-400" />
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="border-t border-zinc-200 pt-3">
@@ -67,7 +85,8 @@ export function ChatView() {
                         <button
                             key={suggestion}
                             onClick={() => actions.sendChat(suggestion)}
-                            className="h-[30px] cursor-pointer rounded-full border border-zinc-200 bg-white px-3 text-xs text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-100"
+                            disabled={chatPending}
+                            className="h-[30px] cursor-pointer rounded-full border border-zinc-200 bg-white px-3 text-xs text-zinc-600 transition hover:border-zinc-300 hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {suggestion}
                         </button>
@@ -78,12 +97,14 @@ export function ChatView() {
                         value={chatInput}
                         onChange={(e) => actions.setChatInput(e.target.value)}
                         onKeyDown={onKeyDown}
+                        disabled={chatPending}
                         placeholder="Escribe un mensaje a Guaschnet…"
-                        className="h-11 flex-1 rounded-[10px] border border-zinc-200 px-3.5 text-sm transition outline-none focus:border-zinc-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)]"
+                        className="h-11 flex-1 rounded-[10px] border border-zinc-200 px-3.5 text-sm transition outline-none focus:border-zinc-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.05)] disabled:bg-zinc-50"
                     />
                     <button
                         onClick={() => actions.sendChat(chatInput)}
-                        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-[10px] bg-zinc-900 text-zinc-50 transition hover:bg-black"
+                        disabled={chatPending}
+                        className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-[10px] bg-zinc-900 text-zinc-50 transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <Icon name="arrow-up" width={18} height={18} />
                     </button>
